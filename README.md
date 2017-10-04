@@ -10,7 +10,7 @@ It is a simple Dropbox replica. It uses NodeJS, ExpressJS, ReactJS & MySQL.
   npm start
 ```
 
-**Note : Please make sure your MySQL is running.** Also `npm3` is required to install dependencies properly.
+**Note : Please make sure your MySQL is running and has a database named 'dropbox-prototype'.** Also `npm3` is required to install dependencies properly.
 
 ## Available Commands
 

@@ -10,33 +10,34 @@ import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 
 // Initialize the Express App
-const app = new express();
+var app = new express();
 
 // Run Webpack dev server in development mode
 if (process.env.NODE_ENV === 'development') {
   const compiler = webpack(config);
-  app.use(webpackDevMiddleware(compiler, { noInfo: true, publicPath: config.output.publicPath }));
+  app.use(webpackDevMiddleware(compiler, {noInfo: true, publicPath: config.output.publicPath}));
   app.use(webpackHotMiddleware(compiler));
 }
 
 // React And Redux Setup
-import { configureStore } from '../client/store';
-import { Provider } from 'react-redux';
+import {configureStore} from '../client/store';
+import {Provider} from 'react-redux';
 import React from 'react';
-import { renderToString } from 'react-dom/server';
-import { match, RouterContext } from 'react-router';
+import {renderToString} from 'react-dom/server';
+import {match, RouterContext} from 'react-router';
 import Helmet from 'react-helmet';
 
 // Import required modules
 import routes from '../client/routes';
-import { fetchComponentData } from './util/fetchData';
+import {fetchComponentData} from './util/fetchData';
 import serverConfig from './config';
 import appRoutes from './routes/app';
+import userRoutes from './routes/user';
 
 // Apply body Parser and server public assets and routes
 app.use(compression());
-app.use(bodyParser.json({ limit: '20mb' }));
-app.use(bodyParser.urlencoded({ limit: '20mb', extended: false }));
+app.use(bodyParser.json({limit: '20mb'}));
+app.use(bodyParser.urlencoded({limit: '20mb', extended: false}));
 app.use(express.static(path.resolve(__dirname, '../dist/client')));
 
 // To allow CORS
@@ -49,6 +50,7 @@ app.use(function (req, res, next) {
 
 // API paths
 app.use('/', appRoutes);
+app.use('/user', userRoutes);
 
 // Render Initial HTML
 const renderFullPage = (html, initialState) => {
@@ -77,7 +79,7 @@ const renderFullPage = (html, initialState) => {
         <script>
           window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
           ${process.env.NODE_ENV === 'production' ?
-          `//<![CDATA[
+    `//<![CDATA[
           window.webpackManifest = ${JSON.stringify(chunkManifest)};
           //]]>` : ''}
         </script>
@@ -97,7 +99,7 @@ const renderError = err => {
 
 // Server Side Rendering based on routes matched by React-router.
 app.use((req, res, next) => {
-  match({ routes, location: req.url }, (err, redirectLocation, renderProps) => {
+  match({routes, location: req.url}, (err, redirectLocation, renderProps) => {
     if (err) {
       return res.status(500).end(renderError(err));
     }
@@ -116,8 +118,8 @@ app.use((req, res, next) => {
       .then(() => {
         const initialView = renderToString(
           <Provider store={store}>
-              <RouterContext {...renderProps} />
-          </Provider>
+            <RouterContext {...renderProps} />
+          </Provider>,
         );
         const finalState = store.getState();
 
