@@ -1,9 +1,14 @@
+import serverConfig from '../config';
+
+var path = require('path');
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
+var fs = require('fs-extra');
 
+// User Sign up
 router.post('/signup', function (req, res, next) {
   var user = {
     firstName: req.body.firstName,
@@ -13,6 +18,15 @@ router.post('/signup', function (req, res, next) {
   };
   User.create(user)
     .then((user) => {
+      // Creates root directory for the signed up user.
+      fs.ensureDir(path.resolve(serverConfig.box.path, user.email, 'tmp'))
+        .then(() => {
+          console.log("Created root directory for " + user.email);
+        })
+        .catch((error) => {
+          console.error("Cannot create root directory for " + user.email + ". Error: " + error);
+        });
+
       res.status(201).json({
         message: 'Successfully signed up.',
         userId: user.email,
@@ -20,12 +34,13 @@ router.post('/signup', function (req, res, next) {
     })
     .catch((error) => {
       res.status(400).json({
-        title: 'Invalid Data.',
-        error: error,
+        title: 'Signing up failed.',
+        error: {message: 'Invalid Data.'},
       });
     });
 });
 
+// User Sign in
 router.post('/signin', function (req, res, next) {
   User.find({where: {email: req.body.email}})
     .then((user) => {
@@ -39,7 +54,7 @@ router.post('/signin', function (req, res, next) {
       res.status(200).json({
         message: 'Successfully signed in.',
         token: token,
-        userId: user.email
+        userId: user.email,
       });
     })
     .catch((error) => {

@@ -33,24 +33,28 @@ import {fetchComponentData} from './util/fetchData';
 import serverConfig from './config';
 import appRoutes from './routes/app';
 import userRoutes from './routes/user';
+import directoryRoutes from './routes/directory';
+import fileRoutes from './routes/file';
 
 // Apply body Parser and server public assets and routes
 app.use(compression());
 app.use(bodyParser.json({limit: '20mb'}));
-app.use(bodyParser.urlencoded({limit: '20mb', extended: false}));
+app.use(bodyParser.urlencoded({limit: '20mb', extended: true}));
 app.use(express.static(path.resolve(__dirname, '../dist/client')));
 
-// To allow CORS
+/*// To allow CORS
 app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.setHeader('Access-Control-Allow-Methods', 'POST, GET, PATCH, DELETE, OPTIONS');
   next();
-});
+});*/
 
 // API paths
 app.use('/', appRoutes);
 app.use('/user', userRoutes);
+app.use('/directory', directoryRoutes);
+app.use('/file', fileRoutes);
 
 // Render Initial HTML
 const renderFullPage = (html, initialState) => {
