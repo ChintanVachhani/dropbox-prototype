@@ -35,6 +35,8 @@ import appRoutes from './routes/app';
 import userRoutes from './routes/user';
 import directoryRoutes from './routes/directory';
 import fileRoutes from './routes/file';
+import sharedDirectoryRoutes from './routes/sharedDirectory';
+import sharedFileRoutes from './routes/sharedFile';
 
 // Apply body Parser and server public assets and routes
 app.use(compression());
@@ -55,6 +57,8 @@ app.use('/', appRoutes);
 app.use('/user', userRoutes);
 app.use('/directory', directoryRoutes);
 app.use('/file', fileRoutes);
+app.use('/sharedDirectory', sharedDirectoryRoutes);
+app.use('/sharedFile', sharedFileRoutes);
 
 // Render Initial HTML
 const renderFullPage = (html, initialState) => {

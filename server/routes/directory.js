@@ -3,11 +3,13 @@ import serverConfig from '../config';
 var path = require('path');
 var express = require('express');
 var router = express.Router();
-var User = require('../models/user');
-var bcrypt = require('bcryptjs');
+var Cryptr = require('cryptr'), cryptr = new Cryptr('secret');
 var jwt = require('jsonwebtoken');
 var fs = require('fs-extra');
 var Directory = require('../models/directory');
+var SharedDirectory = require('../models/sharedDirectory');
+var File = require('../models/file');
+var SharedFile = require('../models/sharedFile');
 var zipFolder = require('zip-folder');
 
 // Session Authentication
@@ -32,7 +34,6 @@ router.get('/download', function (req, res, next) {
       error: {message: 'Users do not match.'},
     });
   }
-  console.log(path.resolve(serverConfig.box.path, decoded.user.email, req.query.path, req.query.name));
   zipFolder(path.resolve(serverConfig.box.path, decoded.user.email, req.query.path, req.query.name), path.resolve(serverConfig.box.path, decoded.user.email, 'tmp', req.query.name) + '.zip', function (error) {
     if (error) {
       console.log("Directory cannot be zipped. " + error);
@@ -59,12 +60,6 @@ router.get('/download', function (req, res, next) {
 // Get all directories
 router.get('/', function (req, res, next) {
   var decoded = jwt.decode(req.query.token);
-  if (req.query.userId != decoded.user.email) {
-    return res.status(401).json({
-      title: 'Not Authenticated.',
-      error: {message: 'Users do not match.'},
-    });
-  }
   Directory.findAll({where: {owner: decoded.user.email, path: req.query.path}})
     .then((directories) => {
       res.status(200).json({
@@ -131,6 +126,180 @@ router.put('/', function (req, res, next) {
           error: {message: 'Invalid Data.'},
         });
       });
+  }
+});
+
+// Star a directory
+router.patch('/star', function (req, res, next) {
+  var decoded = jwt.decode(req.query.token);
+  Directory.find({where: {id: req.body.id}})
+    .then((directory) => {
+      if (directory.owner != decoded.user.email) {
+        return res.status(401).json({
+          title: 'Not Authenticated.',
+          error: {message: 'Users do not match.'},
+        });
+      }
+      directory.updateAttributes({
+        starred: true,
+      });
+      res.status(200).json({
+        message: 'Directory successfully starred.',
+        name: directory.name,
+      });
+    })
+    .catch(() => {
+      res.status(404).json({
+        title: 'Cannot star directory.',
+        error: {message: 'Directory not found.'},
+      });
+    });
+});
+
+// Share a directory
+router.patch('/share', function (req, res, next) {
+  var decoded = jwt.decode(req.query.token);
+  var successful = true;
+  var markAllDirectoriesShared = function (directoryPath, directoryName, directoryId) {
+    Directory.find({where: {id: directoryId}})
+      .then((directory) => {
+        if (directory.owner != decoded.user.email) {
+          return res.status(401).json({
+            title: 'Not Authenticated.',
+            error: {message: 'Users do not match.'},
+          });
+        }
+        for (var i = 0, len = req.body.sharers.length; i < len; i++) {
+          var sharer = req.body.sharers[i];
+          SharedDirectory.findOrCreate({
+            where: {
+              name: directoryName,
+              path: directoryPath,
+              owner: req.body.owner,
+              sharer: sharer,
+            },
+            defaults: {
+              path: cryptr.encrypt(directoryPath),
+              sharer: sharer,
+            },
+          }).spread((sharedDirectory, created) => {
+            if (created) {
+              console.log("Shared directory created.");
+            }
+          });
+        }
+        directory.updateAttributes({
+          shared: true,
+        });
+        console.log({
+          message: 'Directory successfully shared.',
+          name: directory.name,
+        });
+        //getSubFiles
+        File.findAll({where: {owner: decoded.user.email, path: path.join(directoryPath, directoryName)}})
+          .then((files) => {
+            console.log({
+              message: 'Files retrieved successfully.',
+              data: files,
+            });
+            if (files != null && files.length > 0) {
+              moreFiles = true;
+              for (var i = 0, len = files.length; i < len; i++) {
+                //shareFile
+                File.find({where: {id: files[i].id}})
+                  .then((file) => {
+                    if (file.owner != decoded.user.email) {
+                      return res.status(401).json({
+                        title: 'Not Authenticated.',
+                        error: {message: 'Users do not match.'},
+                      });
+                    }
+                    for (var i = 0, len = req.body.sharers.length; i < len; i++) {
+                      var sharer = req.body.sharers[i];
+                      SharedFile.findOrCreate({
+                        where: {
+                          name: file.name,
+                          path: file.path,
+                          owner: req.body.owner,
+                          sharer: sharer,
+                        },
+                        defaults: {
+                          path: cryptr.encrypt(file.path),
+                          sharer: sharer,
+                        },
+                      }).spread((sharedFile, created) => {
+                        if (created) {
+                          console.log("Shared file created.");
+                        }
+                      });
+                    }
+                    file.updateAttributes({
+                      shared: true,
+                    });
+                    console.log({
+                      message: 'File successfully shared.',
+                      name: file.name,
+                    });
+                  })
+                  .catch(() => {
+                    console.log({
+                      title: 'Cannot share file.',
+                      error: {message: 'File not found.'},
+                    });
+                  });
+              }
+            }
+          })
+          .catch(() => {
+            console.log({
+              title: 'Cannot retrieve files.',
+              error: {message: 'Internal server error.'},
+            });
+          });
+        //getSubDirectories
+        console.log("Path: " + path.join(directoryPath, directoryName));
+        Directory.findAll({where: {owner: decoded.user.email, path: path.join(directoryPath, directoryName)}})
+          .then((directories) => {
+            console.log({
+              message: 'Directories retrieved successfully.',
+              data: directories,
+            });
+            if (directories != null && directories.length > 0) {
+              for (var i = 0, len = directories.length; i < len; i++) {
+                //function recall
+                markAllDirectoriesShared(directories[i].path, directories[i].name, directories[i].id);
+              }
+            }
+          })
+          .catch(() => {
+            console.log({
+              title: 'Cannot retrieve directories.',
+              error: {message: 'Internal server error.'},
+            });
+
+          });
+      })
+      .catch(() => {
+        successful = false;
+        console.log({
+          title: 'Cannot share directory.',
+          error: {message: 'Directory not found.'},
+        });
+      });
+  };
+
+  markAllDirectoriesShared(req.body.path, req.body.name, req.body.id);
+
+  if (successful) {
+    return res.status(200).json({
+      message: 'Directory successfully shared.',
+      name: req.body.name,
+    });
+  } else {
+    return res.status(500).json({
+      title: 'Cannot share directory.',
+      error: {message: 'Internal server error.'},
+    });
   }
 });
 

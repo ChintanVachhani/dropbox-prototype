@@ -32,7 +32,7 @@ router.post('/signup', function (req, res, next) {
         userId: user.email,
       });
     })
-    .catch((error) => {
+    .catch(() => {
       res.status(400).json({
         title: 'Signing up failed.',
         error: {message: 'Invalid Data.'},
@@ -57,7 +57,7 @@ router.post('/signin', function (req, res, next) {
         userId: user.email,
       });
     })
-    .catch((error) => {
+    .catch(() => {
       res.status(401).json({
         title: 'Signing in failed.',
         error: {message: 'Invalid credentials.'},
