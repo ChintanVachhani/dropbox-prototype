@@ -24,7 +24,7 @@ var SharedFile = sequelize.define('sharedFile', {
     type: Sequelize.STRING,
   },
   link: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT,
   },
   show: {
     type: Sequelize.BOOLEAN,

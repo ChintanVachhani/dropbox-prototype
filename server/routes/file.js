@@ -41,6 +41,44 @@ router.get('/', function (req, res, next) {
     });
 });
 
+// Get a file from link
+router.get('/link/:path/:fileName', function (req, res, next) {
+  res.download(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path), req.params.fileName), req.params.fileName, function (err) {
+    if (err) {
+      console.log("File download failed.");
+    } else {
+      console.log("File downloaded successfully.");
+    }
+  });
+});
+
+// Create a shareable link
+router.patch('/link', function (req, res, next) {
+  var decoded = jwt.decode(req.query.token);
+  File.find({where: {id: req.body.id}})
+    .then((file) => {
+      if (file.owner != decoded.user.email) {
+        return res.status(401).json({
+          title: 'Not Authenticated.',
+          error: {message: 'Users do not match.'},
+        });
+      }
+      file.updateAttributes({
+        link: path.join("localhost:8000", "file", "link", cryptr.encrypt(path.join(file.owner, file.path)), file.name),
+      });
+      res.status(200).json({
+        message: "File's shareable link successfully created.",
+        link: file.link,
+      });
+    })
+    .catch(() => {
+      res.status(404).json({
+        title: 'Cannot create shareable link.',
+        error: {message: 'File not found.'},
+      });
+    });
+});
+
 // Download a file
 router.get('/download', function (req, res, next) {
   var decoded = jwt.decode(req.query.token);

@@ -4,6 +4,7 @@ var path = require('path');
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
+var UserAccount = require('../models/userAccount');
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
 var fs = require('fs-extra');
@@ -19,14 +20,20 @@ router.post('/signup', function (req, res, next) {
   User.create(user)
     .then((user) => {
       // Creates root directory for the signed up user.
-      fs.ensureDir(path.resolve(serverConfig.box.path, user.email, 'tmp'))
+      fs.ensureDir(path.resolve(serverConfig.box.path, user.email, 'root'))
         .then(() => {
           console.log("Created root directory for " + user.email);
         })
         .catch((error) => {
           console.error("Cannot create root directory for " + user.email + ". Error: " + error);
         });
-
+      fs.ensureDir(path.resolve(serverConfig.box.path, user.email, 'tmp'))
+        .then(() => {
+          console.log("Created tmp directory for " + user.email);
+        })
+        .catch((error) => {
+          console.error("Cannot create tmp directory for " + user.email + ". Error: " + error);
+        });
       res.status(201).json({
         message: 'Successfully signed up.',
         userId: user.email,
@@ -111,4 +118,45 @@ router.get('/', function (req, res, next) {
   }
 });
 
+router.patch('/account', function (req, res, next) {
+  var decoded = jwt.decode(req.query.token);
+  if (req.body.userId != decoded.user.email) {
+    return res.status(401).json({
+      title: 'Not Authenticated.',
+      error: {message: 'Users do not match.'},
+    });
+  }
+  User.find({where: {email: req.body.userId}})
+    .then((user) => {
+      UserAccount.find({where: {email: req.body.userId}})
+        .then((userAccount) => {
+          userAccount.updateAttributes({
+            overview: req.body.overview,
+            work: req.body.work,
+            education: req.body.education,
+            address: req.body.address,
+            country: req.body.country,
+            city: req.body.city,
+            zipcode: req.body.zipcode,
+            interests: req.bo.interests,
+          });
+          res.status(200).json({
+            message: 'User account successfully updated.',
+            userId: userAccount.email,
+          });
+        })
+        .catch(() => {
+          res.status(404).json({
+            title: 'Cannot update user account.',
+            error: {message: 'User account not found.'},
+          });
+        })
+        .catch(() => {
+          res.status(404).json({
+            title: 'Cannot update user account.',
+            error: {message: 'User not found.'},
+          });
+        });
+    });
+});
 module.exports = router;

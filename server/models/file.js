@@ -25,7 +25,7 @@ var File = sequelize.define('file', {
     defaultValue: false,
   },
   link: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT,
   },
   show: {
     type: Sequelize.BOOLEAN,

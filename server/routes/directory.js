@@ -75,6 +75,58 @@ router.get('/', function (req, res, next) {
     });
 });
 
+// Get a directory from link
+router.get('/link/:path/:directoryName', function (req, res, next) {
+  zipFolder(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path), req.params.directoryName), path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path).split(path.sep)[0], 'tmp', req.params.directoryName) + '.zip', function (error) {
+    if (error) {
+      console.log("Directory cannot be zipped. " + error);
+    } else {
+      console.log('Directory zipped successfully.');
+      res.download(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path).split(path.sep)[0], 'tmp', req.params.directoryName) + '.zip', req.params.directoryName + '.zip', function (err) {
+        if (err) {
+          console.log("Directory download failed.");
+        } else {
+          fs.remove(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path).split(path.sep)[0], 'tmp', req.params.directoryName) + '.zip')
+            .then(() => {
+              console.log("Deleted zipped directory.");
+            })
+            .catch(() => {
+              console.log("Cannot delete zipped directory.");
+            });
+          console.log("Directory downloaded successfully.");
+        }
+      });
+    }
+  });
+});
+
+// Create a shareable link
+router.patch('/link', function (req, res, next) {
+  var decoded = jwt.decode(req.query.token);
+  Directory.find({where: {id: req.body.id}})
+    .then((directory) => {
+      if (directory.owner != decoded.user.email) {
+        return res.status(401).json({
+          title: 'Not Authenticated.',
+          error: {message: 'Users do not match.'},
+        });
+      }
+      directory.updateAttributes({
+        link: path.join("localhost:8000", "directory", "link", cryptr.encrypt(path.join(directory.owner, directory.path)), directory.name),
+      });
+      res.status(200).json({
+        message: "Directory's shareable link successfully created.",
+        link: directory.link,
+      });
+    })
+    .catch(() => {
+      res.status(404).json({
+        title: 'Cannot create shareable link.',
+        error: {message: 'Directory not found.'},
+      });
+    });
+});
+
 // Create a directory
 router.put('/', function (req, res, next) {
   var decoded = jwt.decode(req.query.token);
