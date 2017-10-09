@@ -5,28 +5,32 @@ var File = sequelize.define('file', {
   id: {
     type: Sequelize.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
   },
   name: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING,
   },
   path: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING,
   },
   owner: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING,
   },
   starred: {
     type: Sequelize.BOOLEAN,
-    defaultValue: false
+    defaultValue: false,
   },
   shared: {
     type: Sequelize.BOOLEAN,
-    defaultValue: false
+    defaultValue: false,
   },
-  link:{
+  link: {
     type: Sequelize.STRING,
-  }
+  },
+  show: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
 });
 
 File.sync()

@@ -27,6 +27,10 @@ var Directory = sequelize.define('directory', {
   link: {
     type: Sequelize.STRING,
   },
+  show: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
 });
 
 Directory.sync()

@@ -26,6 +26,10 @@ var SharedDirectory = sequelize.define('sharedDirectory', {
   link: {
     type: Sequelize.STRING,
   },
+  show: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
 });
 
 SharedDirectory.sync()

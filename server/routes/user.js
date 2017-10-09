@@ -65,4 +65,50 @@ router.post('/signin', function (req, res, next) {
     });
 });
 
+// Session Authentication
+router.use('/', function (req, res, next) {
+  jwt.verify(req.query.token, 'secret', function (error, decoded) {
+    if (error) {
+      return res.status(401).json({
+        title: 'Not Authenticated.',
+        error: error,
+      });
+    }
+    next();
+  });
+});
+
+// get users
+router.get('/', function (req, res, next) {
+  if (req.query.searchString.length > 0) {
+    User.findAll({
+      attributes: ['firstName', 'lastname', 'email'],
+      where: {
+        $or: {
+          firstName: {$like: '%' + req.query.searchString + '%'},
+          lastname: {$like: '%' + req.query.searchString + '%'},
+          email: {$like: '%' + req.query.searchString + '%'},
+        },
+      },
+    })
+      .then((users) => {
+        res.status(200).json({
+          message: 'Users retrieved successfully.',
+          data: users,
+        });
+      })
+      .catch(() => {
+        res.status(500).json({
+          title: 'Cannot retrieve users.',
+          error: {message: 'Internal Server Error.'},
+        });
+      });
+  } else {
+    res.status(200).json({
+      message: 'No search string.',
+      data: [],
+    });
+  }
+});
+
 module.exports = router;

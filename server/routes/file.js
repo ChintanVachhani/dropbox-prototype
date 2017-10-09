@@ -166,6 +166,7 @@ router.patch('/share', function (req, res, next) {
           defaults: {
             path: cryptr.encrypt(req.body.path),
             sharer: sharer,
+            show: true,
           },
         }).spread((sharedFile, created) => {
           if (created) {
@@ -175,6 +176,7 @@ router.patch('/share', function (req, res, next) {
       }
       file.updateAttributes({
         shared: true,
+        show: true,
       });
       res.status(200).json({
         message: 'File successfully shared.',

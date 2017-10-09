@@ -26,6 +26,10 @@ var SharedFile = sequelize.define('sharedFile', {
   link: {
     type: Sequelize.STRING,
   },
+  show: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
 });
 
 SharedFile.sync()

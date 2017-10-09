@@ -6,7 +6,6 @@ var router = express.Router();
 var Cryptr = require('cryptr'), cryptr = new Cryptr('secret');
 var jwt = require('jsonwebtoken');
 var fs = require('fs-extra');
-var multer = require('multer');
 var SharedFile = require('../models/sharedFile');
 
 // Session Authentication

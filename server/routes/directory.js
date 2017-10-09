@@ -160,7 +160,7 @@ router.patch('/star', function (req, res, next) {
 router.patch('/share', function (req, res, next) {
   var decoded = jwt.decode(req.query.token);
   var successful = true;
-  var markAllDirectoriesShared = function (directoryPath, directoryName, directoryId) {
+  var markAllDirectoriesShared = function (directoryPath, directoryName, directoryId, toShow) {
     Directory.find({where: {id: directoryId}})
       .then((directory) => {
         if (directory.owner != decoded.user.email) {
@@ -177,6 +177,7 @@ router.patch('/share', function (req, res, next) {
               path: directoryPath,
               owner: req.body.owner,
               sharer: sharer,
+              show: toShow,
             },
             defaults: {
               path: cryptr.encrypt(directoryPath),
@@ -190,6 +191,7 @@ router.patch('/share', function (req, res, next) {
         }
         directory.updateAttributes({
           shared: true,
+          show: toShow,
         });
         console.log({
           message: 'Directory successfully shared.',
@@ -267,7 +269,7 @@ router.patch('/share', function (req, res, next) {
             if (directories != null && directories.length > 0) {
               for (var i = 0, len = directories.length; i < len; i++) {
                 //function recall
-                markAllDirectoriesShared(directories[i].path, directories[i].name, directories[i].id);
+                markAllDirectoriesShared(directories[i].path, directories[i].name, directories[i].id, false);
               }
             }
           })
@@ -288,7 +290,7 @@ router.patch('/share', function (req, res, next) {
       });
   };
 
-  markAllDirectoriesShared(req.body.path, req.body.name, req.body.id);
+  markAllDirectoriesShared(req.body.path, req.body.name, req.body.id, true);
 
   if (successful) {
     return res.status(200).json({
