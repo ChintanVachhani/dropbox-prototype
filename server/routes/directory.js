@@ -50,6 +50,23 @@ router.get('/download', function (req, res, next) {
             .catch(() => {
               console.log("Cannot delete zipped directory.");
             });
+          var activity = {
+            email: decoded.user.email,
+            log: "Downloaded " + req.query.name,
+          };
+          Activity.create(activity)
+            .then((activity) => {
+              console.log({
+                message: 'Activity successfully logged.',
+                log: activity.log,
+              });
+            })
+            .catch(() => {
+              console.log({
+                title: 'Activity cannot be logged.',
+                error: {message: 'Invalid Data.'},
+              });
+            });
           console.log("Directory downloaded successfully.");
         }
       });
@@ -159,6 +176,23 @@ router.put('/', function (req, res, next) {
         console.log("Created directory " + directory.name);
         Directory.create(directory)
           .then((directory) => {
+            var activity = {
+              email: decoded.user.email,
+              log: "Created " + directory.name,
+            };
+            Activity.create(activity)
+              .then((activity) => {
+                console.log({
+                  message: 'Activity successfully logged.',
+                  log: activity.log,
+                });
+              })
+              .catch(() => {
+                console.log({
+                  title: 'Activity cannot be logged.',
+                  error: {message: 'Invalid Data.'},
+                });
+              });
             res.status(201).json({
               message: 'Directory successfully created.',
               name: directory.name,
@@ -195,6 +229,23 @@ router.patch('/star', function (req, res, next) {
       directory.updateAttributes({
         starred: true,
       });
+      var activity = {
+        email: decoded.user.email,
+        log: "Starred " + directory.name,
+      };
+      Activity.create(activity)
+        .then((activity) => {
+          console.log({
+            message: 'Activity successfully logged.',
+            log: activity.log,
+          });
+        })
+        .catch(() => {
+          console.log({
+            title: 'Activity cannot be logged.',
+            error: {message: 'Invalid Data.'},
+          });
+        });
       res.status(200).json({
         message: 'Directory successfully starred.',
         name: directory.name,
@@ -430,6 +481,23 @@ router.delete('/', function (req, res, next) {
               .then(() => {
                 Directory.destroy({where: {name: req.body.name, path: req.body.path, owner: req.body.owner}});
                 console.log("Deleted directory " + req.body.name);
+                var activity = {
+                  email: decoded.user.email,
+                  log: "Deleted " + req.body.name,
+                };
+                Activity.create(activity)
+                  .then((activity) => {
+                    console.log({
+                      message: 'Activity successfully logged.',
+                      log: activity.log,
+                    });
+                  })
+                  .catch(() => {
+                    console.log({
+                      title: 'Activity cannot be logged.',
+                      error: {message: 'Invalid Data.'},
+                    });
+                  });
                 res.status(200).json({
                   message: 'Directory successfully deleted.',
                   name: req.body.name,

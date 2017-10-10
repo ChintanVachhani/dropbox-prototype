@@ -9,6 +9,7 @@ var fs = require('fs-extra');
 var multer = require('multer');
 var File = require('../models/file');
 var SharedFile = require('../models/sharedFile');
+var Activity = require('../models/activity');
 
 // Session Authentication
 router.use('/', function (req, res, next) {
@@ -93,10 +94,26 @@ router.get('/download', function (req, res, next) {
       console.log("File download failed.");
     } else {
       console.log("File downloaded successfully.");
+      var activity = {
+        email: decoded.user.email,
+        log: "Downloaded " + req.query.name,
+      };
+      Activity.create(activity)
+        .then((activity) => {
+          console.log({
+            message: 'Activity successfully logged.',
+            log: activity.log,
+          });
+        })
+        .catch(() => {
+          console.log({
+            title: 'Activity cannot be logged.',
+            error: {message: 'Invalid Data.'},
+          });
+        });
     }
   });
 });
-
 // Upload and save file
 router.post('/', function (req, res, next) {
   var decoded = jwt.decode(req.query.token);
@@ -147,6 +164,23 @@ router.post('/', function (req, res, next) {
         console.error("Could not save file " + req.file.originalname + ". Error: " + error);
       });
     console.log("Uploaded file " + req.file.originalname);
+    var activity = {
+      email: decoded.user.email,
+      log: "Uploaded " + req.file.originalname,
+    };
+    Activity.create(activity)
+      .then((activity) => {
+        console.log({
+          message: 'Activity successfully logged.',
+          log: activity.log,
+        });
+      })
+      .catch(() => {
+        console.log({
+          title: 'Activity cannot be logged.',
+          error: {message: 'Invalid Data.'},
+        });
+      });
     res.status(201).json({
       message: 'File successfully uploaded.',
       name: req.file.originalname,
@@ -168,6 +202,23 @@ router.patch('/star', function (req, res, next) {
       file.updateAttributes({
         starred: true,
       });
+      var activity = {
+        email: decoded.user.email,
+        log: "Starred " + file.name,
+      };
+      Activity.create(activity)
+        .then((activity) => {
+          console.log({
+            message: 'Activity successfully logged.',
+            log: activity.log,
+          });
+        })
+        .catch(() => {
+          console.log({
+            title: 'Activity cannot be logged.',
+            error: {message: 'Invalid Data.'},
+          });
+        });
       res.status(200).json({
         message: 'File successfully starred.',
         name: file.name,
@@ -302,6 +353,23 @@ router.delete('/', function (req, res, next) {
               .then(() => {
                 File.destroy({where: {name: req.body.name, path: req.body.path, owner: req.body.owner}});
                 console.log("Deleted file " + req.body.name);
+                var activity = {
+                  email: decoded.user.email,
+                  log: "Deleted " + req.body.name,
+                };
+                Activity.create(activity)
+                  .then((activity) => {
+                    console.log({
+                      message: 'Activity successfully logged.',
+                      log: activity.log,
+                    });
+                  })
+                  .catch(() => {
+                    console.log({
+                      title: 'Activity cannot be logged.',
+                      error: {message: 'Invalid Data.'},
+                    });
+                  });
                 res.status(200).json({
                   message: 'File successfully deleted.',
                   name: req.body.name,
