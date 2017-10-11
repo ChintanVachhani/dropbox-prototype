@@ -6,10 +6,8 @@
   ],
   "verbose": true,
   "watch": [
-    "server"
+    "server",
+    "client"
   ],
-  "env": {
-    "NODE_ENV": "development"
-  },
   "ext": "js json"
 }

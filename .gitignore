@@ -3,9 +3,5 @@ node_modules/
 npm-debug.log
 .idea/
 dump.rdb
-.vscode/
-public/*
-dist
-coverage/
-.nyc_output/
+public/javascripts/bundle.js
 box/
