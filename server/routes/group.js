@@ -83,17 +83,17 @@ router.delete('/', function (req, res, next) {
           error: {message: 'Users do not match.'},
         });
       }
-      fs.pathExists(path.resolve(serverConfig.box.path, decoded.user.email, 'groups', req.body.name))
+      fs.pathExists(path.resolve(serverConfig.box.path, decoded.user.email, 'groups', group.name))
         .then((exists) => {
           if (exists) {
-            fs.remove(path.resolve(serverConfig.box.path, decoded.user.email, 'groups', req.body.name))
+            fs.remove(path.resolve(serverConfig.box.path, decoded.user.email, 'groups', group.name))
               .then(() => {
-                Group.destroy({where: {name: req.body.name, creator: req.body.creator}});
+                Group.destroy({where: {id: req.body.id}});
                 GroupMember.destroy({where: {groupId: req.body.id}});
-                console.log("Deleted group " + req.body.name);
+                console.log("Deleted group " + group.name);
                 res.status(200).json({
                   message: 'Group successfully deleted.',
-                  name: req.body.name,
+                  name: group.name,
                 });
               })
               .catch(() => {
@@ -152,6 +152,7 @@ router.get('/member', function (req, res, next) {
 
 // Add member to a group
 router.post('/member', function (req, res, next) {
+  let decoded = jwt.decode(req.query.token);
   Group.find({where: {id: req.body.id}})
     .then((group) => {
       if (group.creator != decoded.user.email) {
@@ -165,7 +166,7 @@ router.post('/member', function (req, res, next) {
         GroupMember.findOrCreate({where: {groupId: group.id, email: member}})
           .spread((groupMember, created) => {
             if (created) {
-              console.log({
+              res.status(200).json({
                 message: 'Group member successfully added.',
                 name: groupMember.email,
               });
@@ -175,7 +176,7 @@ router.post('/member', function (req, res, next) {
                 error: {message: 'Member already in group.'},
               });
             }
-          })
+          });
       }
     })
     .catch(() => {
@@ -187,7 +188,8 @@ router.post('/member', function (req, res, next) {
 });
 
 // Delete member from a group
-router.post('/member', function (req, res, next) {
+router.delete('/member', function (req, res, next) {
+  let decoded = jwt.decode(req.query.token);
   Group.find({where: {id: req.body.id}})
     .then((group) => {
       if (group.creator != decoded.user.email) {

@@ -38,6 +38,8 @@ import fileRoutes from './routes/file';
 import sharedDirectoryRoutes from './routes/sharedDirectory';
 import sharedFileRoutes from './routes/sharedFile';
 import activityRoutes from './routes/activity';
+import groupRoutes from './routes/group';
+import groupFileRoutes from './routes/groupFile';
 
 // Apply body Parser and server public assets and routes
 app.use(compression());
@@ -52,6 +54,8 @@ app.use('/file', fileRoutes);
 app.use('/sharedDirectory', sharedDirectoryRoutes);
 app.use('/sharedFile', sharedFileRoutes);
 app.use('/activity', activityRoutes);
+app.use('/group', groupRoutes);
+app.use('/groupFile', groupFileRoutes);
 app.use('/', appRoutes);
 
 // Render Initial HTML
