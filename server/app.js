@@ -1,6 +1,5 @@
 let express = require('express');
 let path = require('path');
-let favicon = require('serve-favicon');
 let cookieParser = require('cookie-parser');
 let bodyParser = require('body-parser');
 
@@ -19,7 +18,6 @@ let groupRoutes = require('./routes/group');
 let groupFileRoutes = require('./routes/groupFile');
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join('public', 'favicon.ico')));
 app.use(bodyParser.json({limit: '20mb'}));
 app.use(bodyParser.urlencoded({limit: '20mb', extended: false}));
 app.use(cookieParser());
