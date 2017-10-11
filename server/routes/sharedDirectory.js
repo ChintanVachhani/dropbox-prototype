@@ -1,12 +1,12 @@
 import serverConfig from '../config';
 
-var path = require('path');
-var express = require('express');
-var router = express.Router();
-var Cryptr = require('cryptr'), cryptr = new Cryptr('secret');
-var jwt = require('jsonwebtoken');
-var fs = require('fs-extra');
-var SharedDirectory = require('../models/sharedDirectory');
+let path = require('path');
+let express = require('express');
+let router = express.Router();
+let Cryptr = require('cryptr'), cryptr = new Cryptr('secret');
+let jwt = require('jsonwebtoken');
+let fs = require('fs-extra');
+let SharedDirectory = require('../models/sharedDirectory');
 
 // Session Authentication
 router.use('/', function (req, res, next) {
@@ -23,7 +23,7 @@ router.use('/', function (req, res, next) {
 
 // List all shared directories
 router.get('/list', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   SharedDirectory.findAll({where: {sharer: decoded.user.email}})
     .then((sharedDirectories) => {
       res.status(200).json({
@@ -41,7 +41,7 @@ router.get('/list', function (req, res, next) {
 
 // Get all shared directories
 router.get('/', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   SharedDirectory.findAll({where: {sharer: decoded.user.email, path: req.query.path}})
     .then((sharedDirectories) => {
       res.status(200).json({
@@ -59,7 +59,7 @@ router.get('/', function (req, res, next) {
 
 // Download a shared directory
 router.post('/download', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   SharedDirectory.find({where: {sharer: decoded.user.email, owner: req.body.owner, path: req.body.path, name: req.body.name}})
     .then(() => {
       zipFolder(path.resolve(serverConfig.box.path, req.body.owner, cryptr.decrypt(req.body.path), req.body.name), path.resolve(serverConfig.box.path, req.body.owner, 'tmp', req.body.name) + '.zip', function (error) {
@@ -94,7 +94,7 @@ router.post('/download', function (req, res, next) {
 
 // Star a shared directory
 router.patch('/star', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   SharedDirectory.find({where: {id: req.body.id}})
     .then((sharedDirectory) => {
       if (sharedDirectory.sharer != decoded.user.email) {

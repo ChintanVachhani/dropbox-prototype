@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
 import sequelize from '../mysql';
 
-var SharedFile = sequelize.define('sharedFile', {
+let SharedFile = sequelize.define('sharedFile', {
   id: {
     type: Sequelize.INTEGER,
     primaryKey: true,

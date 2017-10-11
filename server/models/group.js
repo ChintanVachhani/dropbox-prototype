@@ -1,27 +1,26 @@
 import Sequelize from 'sequelize';
 import sequelize from '../mysql';
 
-let Activity = sequelize.define('activity', {
+let Group = sequelize.define('group', {
   id: {
     type: Sequelize.INTEGER,
     primaryKey: true,
     autoIncrement: true,
   },
-  email: {
+  name: {
     type: Sequelize.STRING,
-    allowNull: false,
   },
-  log: {
+  creator: {
     type: Sequelize.STRING,
   },
 });
 
-Activity.sync()
+Group.sync()
   .then(() => {
-    console.log("'activity' table successfully created.")
+    console.log("'group' table successfully created.")
   })
   .catch(() => {
-    console.log("'activity' table already exists or cannot be created.")
+    console.log("'group' table already exists or cannot be created.")
   });
 
-module.exports = Activity;
+module.exports = Group;

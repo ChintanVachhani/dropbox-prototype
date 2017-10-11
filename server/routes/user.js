@@ -1,17 +1,17 @@
 import serverConfig from '../config';
 
-var path = require('path');
-var express = require('express');
-var router = express.Router();
-var User = require('../models/user');
-var UserAccount = require('../models/userAccount');
-var bcrypt = require('bcryptjs');
-var jwt = require('jsonwebtoken');
-var fs = require('fs-extra');
+let path = require('path');
+let express = require('express');
+let router = express.Router();
+let User = require('../models/user');
+let UserAccount = require('../models/userAccount');
+let bcrypt = require('bcryptjs');
+let jwt = require('jsonwebtoken');
+let fs = require('fs-extra');
 
 // User Sign up
 router.post('/signup', function (req, res, next) {
-  var user = {
+  let user = {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
@@ -33,6 +33,13 @@ router.post('/signup', function (req, res, next) {
         })
         .catch((error) => {
           console.error("Cannot create tmp directory for " + user.email + ". Error: " + error);
+        });
+      fs.ensureDir(path.resolve(serverConfig.box.path, user.email, 'groups'))
+        .then(() => {
+          console.log("Created group directory for " + user.email);
+        })
+        .catch((error) => {
+          console.error("Cannot create group directory for " + user.email + ". Error: " + error);
         });
       res.status(201).json({
         message: 'Successfully signed up.',
@@ -57,7 +64,7 @@ router.post('/signin', function (req, res, next) {
           error: {message: 'Invalid credentials.'},
         });
       }
-      var token = jwt.sign({user: user}, 'secret', {expiresIn: 7200});
+      let token = jwt.sign({user: user}, 'secret', {expiresIn: 7200});
       res.status(200).json({
         message: 'Successfully signed in.',
         token: token,
@@ -85,7 +92,24 @@ router.use('/', function (req, res, next) {
   });
 });
 
-// get users
+// Get user
+router.get('/:userId', function (req, res, next) {
+  User.find({attributes: ['firstName', 'lastname', 'email'], where: {email: req.body.userId}})
+    .then((user) => {
+      res.status(200).json({
+        message: 'Successfully retrieved user information.',
+        data: user,
+      });
+    })
+    .catch(() => {
+      res.status(404).json({
+        title: 'Cannot retrieve user information.',
+        error: {message: 'User not found.'},
+      });
+    });
+});
+
+// Get users
 router.get('/', function (req, res, next) {
   if (req.query.searchString.length > 0) {
     User.findAll({
@@ -119,7 +143,7 @@ router.get('/', function (req, res, next) {
 });
 
 router.patch('/account', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   if (req.body.userId != decoded.user.email) {
     return res.status(401).json({
       title: 'Not Authenticated.',

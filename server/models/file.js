@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
 import sequelize from '../mysql';
 
-var File = sequelize.define('file', {
+let File = sequelize.define('file', {
   id: {
     type: Sequelize.INTEGER,
     primaryKey: true,

@@ -1,7 +1,7 @@
-var express = require('express');
-var router = express.Router();
-var jwt = require('jsonwebtoken');
-var Activity = require('../models/activity');
+let express = require('express');
+let router = express.Router();
+let jwt = require('jsonwebtoken');
+let Activity = require('../models/activity');
 
 // Session Authentication
 router.use('/', function (req, res, next) {
@@ -17,7 +17,7 @@ router.use('/', function (req, res, next) {
 });
 
 router.get('/', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   Activity.findAll({where: {email: decoded.user.email}})
     .then((activities) => {
       res.status(200).json({

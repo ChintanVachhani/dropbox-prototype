@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
 import sequelize from '../mysql';
 
-var Directory = sequelize.define('directory', {
+let Directory = sequelize.define('directory', {
   id: {
     type: Sequelize.INTEGER,
     primaryKey: true,

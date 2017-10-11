@@ -1,12 +1,12 @@
 import serverConfig from '../config';
 
-var path = require('path');
-var express = require('express');
-var router = express.Router();
-var Cryptr = require('cryptr'), cryptr = new Cryptr('secret');
-var jwt = require('jsonwebtoken');
-var fs = require('fs-extra');
-var SharedFile = require('../models/sharedFile');
+let path = require('path');
+let express = require('express');
+let router = express.Router();
+let Cryptr = require('cryptr'), cryptr = new Cryptr('secret');
+let jwt = require('jsonwebtoken');
+let fs = require('fs-extra');
+let SharedFile = require('../models/sharedFile');
 
 // Session Authentication
 router.use('/', function (req, res, next) {
@@ -23,7 +23,7 @@ router.use('/', function (req, res, next) {
 
 // List all shared files
 router.get('/list', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   SharedFile.findAll({where: {sharer: decoded.user.email}})
     .then((sharedFiles) => {
       res.status(200).json({
@@ -41,7 +41,7 @@ router.get('/list', function (req, res, next) {
 
 // Get all shared files
 router.get('/', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   SharedFile.findAll({where: {owner: decoded.user.email, path: req.query.path}})
     .then((sharedFiles) => {
       res.status(200).json({
@@ -59,7 +59,7 @@ router.get('/', function (req, res, next) {
 
 // Download a shared file
 router.get('/download', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   SharedFile.find({where: {sharer: decoded.user.email, owner: req.body.owner, path: req.body.path, name: req.body.name}})
     .then(() => {
       res.download(path.resolve(serverConfig.box.path, decoded.user.email, cryptr.decrypt(req.query.path), req.query.name), req.query.name, function (err) {
@@ -80,7 +80,7 @@ router.get('/download', function (req, res, next) {
 
 // Star a shared file
 router.patch('/star', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   SharedFile.find({where: {id: req.body.id}})
     .then((sharedFile) => {
       if (sharedFile.sharer != decoded.user.email) {

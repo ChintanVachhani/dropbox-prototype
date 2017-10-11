@@ -1,15 +1,15 @@
 import serverConfig from '../config';
 
-var path = require('path');
-var express = require('express');
-var router = express.Router();
-var Cryptr = require('cryptr'), cryptr = new Cryptr('secret');
-var jwt = require('jsonwebtoken');
-var fs = require('fs-extra');
-var multer = require('multer');
-var File = require('../models/file');
-var SharedFile = require('../models/sharedFile');
-var Activity = require('../models/activity');
+let path = require('path');
+let express = require('express');
+let router = express.Router();
+let Cryptr = require('cryptr'), cryptr = new Cryptr('secret');
+let jwt = require('jsonwebtoken');
+let fs = require('fs-extra');
+let multer = require('multer');
+let File = require('../models/file');
+let SharedFile = require('../models/sharedFile');
+let Activity = require('../models/activity');
 
 // Session Authentication
 router.use('/', function (req, res, next) {
@@ -26,7 +26,7 @@ router.use('/', function (req, res, next) {
 
 // Get all files
 router.get('/', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   File.findAll({where: {owner: decoded.user.email, path: req.query.path}})
     .then((files) => {
       res.status(200).json({
@@ -55,7 +55,7 @@ router.get('/link/:path/:fileName', function (req, res, next) {
 
 // Create a shareable link
 router.patch('/link', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   File.find({where: {id: req.body.id}})
     .then((file) => {
       if (file.owner != decoded.user.email) {
@@ -65,7 +65,7 @@ router.patch('/link', function (req, res, next) {
         });
       }
       file.updateAttributes({
-        link: path.join("localhost:8000", "file", "link", cryptr.encrypt(path.join(file.owner, file.path)), file.name),
+        link: path.join(serverConfig.server + ":" + serverConfig.port, "file", "link", cryptr.encrypt(path.join(file.owner, file.path)), file.name),
       });
       res.status(200).json({
         message: "File's shareable link successfully created.",
@@ -82,7 +82,7 @@ router.patch('/link', function (req, res, next) {
 
 // Download a file
 router.get('/download', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   if (req.query.userId != decoded.user.email) {
     return res.status(401).json({
       title: 'Not Authenticated.',
@@ -94,7 +94,7 @@ router.get('/download', function (req, res, next) {
       console.log("File download failed.");
     } else {
       console.log("File downloaded successfully.");
-      var activity = {
+      let activity = {
         email: decoded.user.email,
         log: "Downloaded " + req.query.name,
       };
@@ -114,11 +114,12 @@ router.get('/download', function (req, res, next) {
     }
   });
 });
+
 // Upload and save file
 router.post('/', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
 
-  var storage = multer.diskStorage({
+  let storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, path.resolve(serverConfig.box.path, decoded.user.email, 'tmp'))
     },
@@ -126,9 +127,8 @@ router.post('/', function (req, res, next) {
       cb(null, file.originalname)
     },
   });
-  var upload = multer({storage: storage, limits: {fileSize: 1000000, files: 1}}).single('file');
+  let upload = multer({storage: storage, limits: {fileSize: 1000000, files: 1}}).single('file');
   upload(req, res, function (error) {
-    console.log(req.body.owner + " " + decoded.user.email);
     if (req.body.owner != decoded.user.email) {
       return res.status(401).json({
         title: 'Not Authenticated.',
@@ -164,7 +164,7 @@ router.post('/', function (req, res, next) {
         console.error("Could not save file " + req.file.originalname + ". Error: " + error);
       });
     console.log("Uploaded file " + req.file.originalname);
-    var activity = {
+    let activity = {
       email: decoded.user.email,
       log: "Uploaded " + req.file.originalname,
     };
@@ -190,7 +190,7 @@ router.post('/', function (req, res, next) {
 
 // Star a file
 router.patch('/star', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   File.find({where: {id: req.body.id}})
     .then((file) => {
       if (file.owner != decoded.user.email) {
@@ -202,7 +202,7 @@ router.patch('/star', function (req, res, next) {
       file.updateAttributes({
         starred: true,
       });
-      var activity = {
+      let activity = {
         email: decoded.user.email,
         log: "Starred " + file.name,
       };
@@ -234,7 +234,7 @@ router.patch('/star', function (req, res, next) {
 
 // Share a file
 router.patch('/share', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   File.find({where: {id: req.body.id}})
     .then((file) => {
       if (file.owner != decoded.user.email) {
@@ -243,8 +243,8 @@ router.patch('/share', function (req, res, next) {
           error: {message: 'Users do not match.'},
         });
       }
-      for (var i = 0, len = req.body.sharers.length; i < len; i++) {
-        var sharer = req.body.sharers[i];
+      for (let i = 0, len = req.body.sharers.length; i < len; i++) {
+        let sharer = req.body.sharers[i];
         SharedFile.findOrCreate({
           where: {
             name: req.body.name,
@@ -283,7 +283,7 @@ router.patch('/share', function (req, res, next) {
 
 // Rename a file
 router.patch('/', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   File.find({where: {id: req.body.id}})
     .then((file) => {
       if (file.owner != decoded.user.email) {
@@ -337,7 +337,7 @@ router.patch('/', function (req, res, next) {
 
 // Delete a file
 router.delete('/', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   File.find({where: {id: req.body.id}})
     .then((file) => {
       if (file.owner != decoded.user.email) {
@@ -353,7 +353,7 @@ router.delete('/', function (req, res, next) {
               .then(() => {
                 File.destroy({where: {name: req.body.name, path: req.body.path, owner: req.body.owner}});
                 console.log("Deleted file " + req.body.name);
-                var activity = {
+                let activity = {
                   email: decoded.user.email,
                   log: "Deleted " + req.body.name,
                 };

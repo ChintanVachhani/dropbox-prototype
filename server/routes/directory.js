@@ -1,16 +1,16 @@
 import serverConfig from '../config';
 
-var path = require('path');
-var express = require('express');
-var router = express.Router();
-var Cryptr = require('cryptr'), cryptr = new Cryptr('secret');
-var jwt = require('jsonwebtoken');
-var fs = require('fs-extra');
-var Directory = require('../models/directory');
-var SharedDirectory = require('../models/sharedDirectory');
-var File = require('../models/file');
-var SharedFile = require('../models/sharedFile');
-var zipFolder = require('zip-folder');
+let path = require('path');
+let express = require('express');
+let router = express.Router();
+let Cryptr = require('cryptr'), cryptr = new Cryptr('secret');
+let jwt = require('jsonwebtoken');
+let fs = require('fs-extra');
+let Directory = require('../models/directory');
+let SharedDirectory = require('../models/sharedDirectory');
+let File = require('../models/file');
+let SharedFile = require('../models/sharedFile');
+let zipFolder = require('zip-folder');
 
 // Session Authentication
 router.use('/', function (req, res, next) {
@@ -27,7 +27,7 @@ router.use('/', function (req, res, next) {
 
 // Download a directory
 router.get('/download', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   if (req.query.userId != decoded.user.email) {
     return res.status(401).json({
       title: 'Not Authenticated.',
@@ -50,7 +50,7 @@ router.get('/download', function (req, res, next) {
             .catch(() => {
               console.log("Cannot delete zipped directory.");
             });
-          var activity = {
+          let activity = {
             email: decoded.user.email,
             log: "Downloaded " + req.query.name,
           };
@@ -76,7 +76,7 @@ router.get('/download', function (req, res, next) {
 
 // Get all directories
 router.get('/', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   Directory.findAll({where: {owner: decoded.user.email, path: req.query.path}})
     .then((directories) => {
       res.status(200).json({
@@ -119,7 +119,7 @@ router.get('/link/:path/:directoryName', function (req, res, next) {
 
 // Create a shareable link
 router.patch('/link', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   Directory.find({where: {id: req.body.id}})
     .then((directory) => {
       if (directory.owner != decoded.user.email) {
@@ -129,7 +129,7 @@ router.patch('/link', function (req, res, next) {
         });
       }
       directory.updateAttributes({
-        link: path.join("localhost:8000", "directory", "link", cryptr.encrypt(path.join(directory.owner, directory.path)), directory.name),
+        link: path.join(serverConfig.server + ":" + serverConfig.port, "directory", "link", cryptr.encrypt(path.join(directory.owner, directory.path)), directory.name),
       });
       res.status(200).json({
         message: "Directory's shareable link successfully created.",
@@ -146,16 +146,16 @@ router.patch('/link', function (req, res, next) {
 
 // Create a directory
 router.put('/', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   if (req.body.owner != decoded.user.email) {
     return res.status(401).json({
       title: 'Not Authenticated.',
       error: {message: 'Users do not match.'},
     });
   }
-  var directoryExists = false;
-  var directoryName = req.body.name;
-  var index = 0;
+  let directoryExists = false;
+  let directoryName = req.body.name;
+  let index = 0;
   do {
     directoryExists = false;
     if (fs.pathExistsSync(path.resolve(serverConfig.box.path, decoded.user.email, req.body.path, directoryName))) {
@@ -164,7 +164,7 @@ router.put('/', function (req, res, next) {
       directoryExists = true;
     }
   } while (directoryExists);
-  var directory = {
+  let directory = {
     name: directoryName,
     path: req.body.path,
     owner: req.body.owner,
@@ -176,7 +176,7 @@ router.put('/', function (req, res, next) {
         console.log("Created directory " + directory.name);
         Directory.create(directory)
           .then((directory) => {
-            var activity = {
+            let activity = {
               email: decoded.user.email,
               log: "Created " + directory.name,
             };
@@ -217,7 +217,7 @@ router.put('/', function (req, res, next) {
 
 // Star a directory
 router.patch('/star', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   Directory.find({where: {id: req.body.id}})
     .then((directory) => {
       if (directory.owner != decoded.user.email) {
@@ -229,7 +229,7 @@ router.patch('/star', function (req, res, next) {
       directory.updateAttributes({
         starred: true,
       });
-      var activity = {
+      let activity = {
         email: decoded.user.email,
         log: "Starred " + directory.name,
       };
@@ -261,9 +261,9 @@ router.patch('/star', function (req, res, next) {
 
 // Share a directory
 router.patch('/share', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
-  var successful = true;
-  var markAllDirectoriesShared = function (directoryPath, directoryName, directoryId, toShow) {
+  let decoded = jwt.decode(req.query.token);
+  let successful = true;
+  let markAllDirectoriesShared = function (directoryPath, directoryName, directoryId, toShow) {
     Directory.find({where: {id: directoryId}})
       .then((directory) => {
         if (directory.owner != decoded.user.email) {
@@ -272,8 +272,8 @@ router.patch('/share', function (req, res, next) {
             error: {message: 'Users do not match.'},
           });
         }
-        for (var i = 0, len = req.body.sharers.length; i < len; i++) {
-          var sharer = req.body.sharers[i];
+        for (let i = 0, len = req.body.sharers.length; i < len; i++) {
+          let sharer = req.body.sharers[i];
           SharedDirectory.findOrCreate({
             where: {
               name: directoryName,
@@ -309,7 +309,7 @@ router.patch('/share', function (req, res, next) {
             });
             if (files != null && files.length > 0) {
               moreFiles = true;
-              for (var i = 0, len = files.length; i < len; i++) {
+              for (let i = 0, len = files.length; i < len; i++) {
                 //shareFile
                 File.find({where: {id: files[i].id}})
                   .then((file) => {
@@ -319,8 +319,8 @@ router.patch('/share', function (req, res, next) {
                         error: {message: 'Users do not match.'},
                       });
                     }
-                    for (var i = 0, len = req.body.sharers.length; i < len; i++) {
-                      var sharer = req.body.sharers[i];
+                    for (let i = 0, len = req.body.sharers.length; i < len; i++) {
+                      let sharer = req.body.sharers[i];
                       SharedFile.findOrCreate({
                         where: {
                           name: file.name,
@@ -370,7 +370,7 @@ router.patch('/share', function (req, res, next) {
               data: directories,
             });
             if (directories != null && directories.length > 0) {
-              for (var i = 0, len = directories.length; i < len; i++) {
+              for (let i = 0, len = directories.length; i < len; i++) {
                 //function recall
                 markAllDirectoriesShared(directories[i].path, directories[i].name, directories[i].id, false);
               }
@@ -410,7 +410,7 @@ router.patch('/share', function (req, res, next) {
 
 // Rename a directory
 router.patch('/', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
 
   Directory.find({where: {id: req.body.id}})
     .then((directory) => {
@@ -465,7 +465,7 @@ router.patch('/', function (req, res, next) {
 
 // Delete a directory
 router.delete('/', function (req, res, next) {
-  var decoded = jwt.decode(req.query.token);
+  let decoded = jwt.decode(req.query.token);
   Directory.find({where: {id: req.body.id}})
     .then((directory) => {
       if (directory.owner != decoded.user.email) {
@@ -481,7 +481,7 @@ router.delete('/', function (req, res, next) {
               .then(() => {
                 Directory.destroy({where: {name: req.body.name, path: req.body.path, owner: req.body.owner}});
                 console.log("Deleted directory " + req.body.name);
-                var activity = {
+                let activity = {
                   email: decoded.user.email,
                   log: "Deleted " + req.body.name,
                 };

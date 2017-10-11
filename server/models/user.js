@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
 import sequelize from '../mysql';
 
-var User = sequelize.define('user', {
+let User = sequelize.define('user', {
   firstName: {
     type: Sequelize.STRING
   },
