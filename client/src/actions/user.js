@@ -10,6 +10,12 @@ export const SIGNUP = 'SIGNUP';
 export const SIGNUP_SUCCESS = 'SIGNUP_SUCCESS';
 export const SIGNUP_FAILURE = 'SIGNUP_FAILURE';
 
+export const SIGNOUT = 'SIGNOUT';
+
+export const GET_USER = 'GET_USER';
+export const GET_USER_SUCCESS = 'GET_USER_SUCCESS';
+export const GET_USER_FAILURE = 'GET_USER_FAILURE';
+
 export function signin(data) {
   return function (dispatch) {
     dispatch({
@@ -28,6 +34,7 @@ export function signin(data) {
           });
         }
         localStorage.setItem('token', result.data.token);
+        localStorage.setItem('userId', result.data.userId);
         dispatch({
           type: SIGNIN_SUCCESS,
           response: result.data.userId,
@@ -69,6 +76,43 @@ export function signup(data) {
       if (result.response) {
         dispatch({
           type: SIGNUP_FAILURE,
+          response: result.response.data.title + ' ' + result.response.data.error.message,
+        });
+      }
+    });
+  };
+}
+
+export function signout() {
+  return {
+    type: SIGNOUT,
+  };
+}
+
+export function getUser(data) {
+  return function (dispatch) {
+    dispatch({
+      type: GET_USER,
+    });
+    axios({
+      method: 'get',
+      url: `${SERVER_URL}/user/${data.userId}?token=${data.token}`,
+    })
+      .then((result) => {
+        if (result.response && result.response.status !== 200) {
+          dispatch({
+            type: GET_USER_FAILURE,
+            response: result.response.data.title + ' ' + result.response.data.error.message,
+          });
+        }
+        dispatch({
+          type: GET_USER_SUCCESS,
+          response: result.data.data,
+        });
+      }).catch((result) => {
+      if (result.response) {
+        dispatch({
+          type: GET_USER_FAILURE,
           response: result.response.data.title + ' ' + result.response.data.error.message,
         });
       }

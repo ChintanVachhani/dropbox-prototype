@@ -27,6 +27,7 @@ class User extends Component {
   }
 
   componentWillReceiveProps(nextProps, nextState) {
+    // if signed in
     if (nextProps.user.status === 'authenticated' && nextProps.user.userId && !nextProps.user.error) {
       this.props.history.push('/');
     }
@@ -34,6 +35,7 @@ class User extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.isCompleted) {
+      // if error
       if (prevProps.user.error !== this.props.user.error) {
         this.setState({...this.state, error: this.props.user.error});
       } else if (this.props.user !== prevProps.user) {

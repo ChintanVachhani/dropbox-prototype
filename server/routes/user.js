@@ -94,7 +94,7 @@ router.use('/', function (req, res, next) {
 
 // Get user
 router.get('/:userId', function (req, res, next) {
-  User.find({attributes: ['firstName', 'lastname', 'email'], where: {email: req.body.userId}})
+  User.find({attributes: ['firstName', 'lastName', 'email'], where: {email: req.params.userId}})
     .then((user) => {
       res.status(200).json({
         message: 'Successfully retrieved user information.',
