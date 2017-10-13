@@ -1,28 +1,46 @@
 import React, {Component} from 'react';
 import {connect} from "react-redux";
-import {signin} from "../actions/user";
+import {signin, signup} from "../actions/user";
 
 class User extends Component {
 
   state = {
-    email: '',
-    password: '',
-    firstName: '',
-    lastName: '',
-  };
-
-  componentWillMount() {
-    this.setState({
+    user: {
       email: '',
       password: '',
       firstName: '',
       lastName: '',
+    }, error: '',
+    isCompleted: false,
+  };
+
+  componentWillMount() {
+    this.setState({
+      user: {
+        email: '',
+        password: '',
+        firstName: '',
+        lastName: '',
+      }, error: '',
+      isCompleted: false,
     });
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps, nextState) {
     if (nextProps.user.status === 'authenticated' && nextProps.user.userId && !nextProps.user.error) {
-      this.context.router.push('/');
+      this.props.history.push('/');
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.isCompleted) {
+      if (prevProps.user.error !== this.props.user.error) {
+        this.setState({...this.state, error: this.props.user.error});
+      } else if (this.props.user !== prevProps.user) {
+        if (this.props.user.status === 'signin' && this.props.user.userId && !this.props.user.error) {
+          this.props.history.push('/');
+        }
+      }
     }
   }
 
@@ -36,7 +54,21 @@ class User extends Component {
         src="./dropbox-logo-text.svg" alt="dropbox-logo-text" id="dropbox-logo-text"/></span>
           </div>
         </div>
-        <div className="row pt-5">
+        <div className="row">
+          <div className="col text-center mt-4">
+            {this.state.error ? <div className="alert alert-danger alert-dismissible fade show" role="alert" id="alert-div">
+              <div id="alert-text-div">
+                {this.state.error}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              </div>
+              <div id="alert-close-btn-div">
+                <button type="button" className="close" data-dismiss="alert" aria-label="Close" id="alert-close-btn">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            </div> : ''}
+          </div>
+        </div>
+        <div className="row pt-3">
           <div className="col text-right">
             <img src="./dropbox-sign-in.png" alt="dropbox-sign-in" id="dropbox-sign-in-img"/>
           </div>
@@ -50,18 +82,21 @@ class User extends Component {
               <div className="form-body row">
                 <form id="sign-in-form" className="col" onSubmit={(e) => {
                   e.preventDefault();
-                  handleSignin(this.state);
+                  handleSignin(this.state.user);
+                  this.setState({...this.state, isCompleted: true});
                 }}>
-                  <div className="form-group mb-4"><input type="email" className="form-control" name="email" placeholder="Email" value={this.state.email}
+                  <div className="form-group mb-4"><input type="email" className="form-control" name="email" placeholder="Email" value={this.state.user.email}
                                                           onChange={(event) => {
                                                             this.setState({
-                                                              email: event.target.value,
+                                                              ...this.state,
+                                                              user: {...this.state.user, email: event.target.value},
                                                             });
                                                           }} required/></div>
-                  <div className="form-group mb-4"><input type="password" className="form-control" name="password" placeholder="Password" value={this.state.password}
+                  <div className="form-group mb-4"><input type="password" className="form-control" name="password" placeholder="Password" value={this.state.user.password}
                                                           onChange={(event) => {
                                                             this.setState({
-                                                              password: event.target.value,
+                                                              ...this.state,
+                                                              user: {...this.state.user, password: event.target.value},
                                                             });
                                                           }} required/></div>
                   <button type="submit" className="btn btn-primary float-right">Sign in
@@ -78,30 +113,35 @@ class User extends Component {
               <div className="form-body row">
                 <form id="sign-up-form" className="col" onSubmit={(e) => {
                   e.preventDefault();
-                  handleSignup(this.state);
+                  handleSignup(this.state.user);
+                  this.setState({...this.state, isCompleted: true});
                 }}>
-                  <div className="form-group mb-4"><input type="text" className="form-control" name="firstName" placeholder="First name" value={this.state.firstName}
+                  <div className="form-group mb-4"><input type="text" className="form-control" name="firstName" placeholder="First name" value={this.state.user.firstName}
                                                           onChange={(event) => {
                                                             this.setState({
-                                                              firstName: event.target.value,
+                                                              ...this.state,
+                                                              user: {...this.state.user, firstName: event.target.value},
                                                             });
                                                           }} required/></div>
-                  <div className="form-group mb-4"><input type="text" className="form-control" name="lastName" placeholder="Last name" value={this.state.lastName}
+                  <div className="form-group mb-4"><input type="text" className="form-control" name="lastName" placeholder="Last name" value={this.state.user.lastName}
                                                           onChange={(event) => {
                                                             this.setState({
-                                                              lastName: event.target.value,
+                                                              ...this.state,
+                                                              user: {...this.state.user, lastName: event.target.value},
                                                             });
                                                           }} required/></div>
-                  <div className="form-group mb-4"><input type="email" className="form-control" name="email" placeholder="Email" value={this.state.email}
+                  <div className="form-group mb-4"><input type="email" className="form-control" name="email" placeholder="Email" value={this.state.user.email}
                                                           onChange={(event) => {
                                                             this.setState({
-                                                              email: event.target.value,
+                                                              ...this.state,
+                                                              user: {...this.state.user, email: event.target.value},
                                                             });
                                                           }} required/></div>
-                  <div className="form-group mb-4"><input type="password" className="form-control" name="password" placeholder="Password" value={this.state.password}
+                  <div className="form-group mb-4"><input type="password" className="form-control" name="password" placeholder="Password" value={this.state.user.password}
                                                           onChange={(event) => {
                                                             this.setState({
-                                                              password: event.target.value,
+                                                              ...this.state,
+                                                              user: {...this.state.user, password: event.target.value},
                                                             });
                                                           }} required/></div>
                   <button type="submit" className="btn btn-primary float-right">Create an account
@@ -123,9 +163,9 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state) {
   return {
-    userId: state.userId,
+    user: state.user,
   };
 }
 

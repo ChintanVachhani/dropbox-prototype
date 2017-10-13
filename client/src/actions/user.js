@@ -24,7 +24,7 @@ export function signin(data) {
         if (result.response && result.response.status !== 200) {
           dispatch({
             type: SIGNIN_FAILURE,
-            response: result.response,
+            response: result.response.data.title + ' ' + result.response.data.error.message,
           });
         }
         localStorage.setItem('token', result.data.token);
@@ -32,6 +32,14 @@ export function signin(data) {
           type: SIGNIN_SUCCESS,
           response: result.data.userId,
         });
+      })
+      .catch((result) => {
+        if (result.response) {
+          dispatch({
+            type: SIGNIN_FAILURE,
+            response: result.response.data.title + ' ' + result.response.data.error.message,
+          });
+        }
       });
   };
 }
@@ -50,13 +58,20 @@ export function signup(data) {
         if (result.response && result.response.status !== 201) {
           dispatch({
             type: SIGNUP_FAILURE,
-            response: result.response,
+            response: result.response.data.title + ' ' + result.response.data.error.message,
           });
         }
         dispatch({
           type: SIGNUP_SUCCESS,
           response: result.data.userId,
         });
-      });
+      }).catch((result) => {
+      if (result.response) {
+        dispatch({
+          type: SIGNUP_FAILURE,
+          response: result.response.data.title + ' ' + result.response.data.error.message,
+        });
+      }
+    });
   };
 }
