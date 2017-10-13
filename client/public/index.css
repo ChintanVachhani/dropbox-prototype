@@ -1,0 +1,64 @@
+#dropbox-logo {
+  z-index: 4;
+  max-height: 46px;
+  max-width: 46px;
+  vertical-align: middle;
+  object-fit: contain;
+  display: inline-block;
+}
+
+#dropbox-logo-text {
+  z-index: 3;
+  max-height: 34px;
+  max-width: 120px;
+  vertical-align: middle;
+  display: inline-block;
+  background: no-repeat center center;
+  position: relative;
+  top: 2px;
+  margin-left: 8px;
+}
+
+#login-header {
+  box-shadow: 0 2px 2px #d0d4d9;
+}
+
+#dropbox-sign-in-img {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 90px;
+  margin-top: 80px;
+  margin-bottom: 110px;
+}
+
+#sign-in-div, #sign-up-div {
+  max-width: 350px;
+  vertical-align: middle;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.form-body{
+  margin-top: 15px;
+}
+
+.form-header {
+  display: inline-block;
+  float: left;
+  font-size: 24px;
+  font-weight: normal;
+}
+
+.form-switch {
+  padding-top: 10px;
+  display: inline-block;
+  float: right;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.collapsing {
+  -webkit-transition: none;
+  transition: none;
+}

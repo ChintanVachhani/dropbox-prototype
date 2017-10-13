@@ -1,7 +1,8 @@
 .DS_Store
-node_modules/
 npm-debug.log
 .idea/
 dump.rdb
-public/javascripts/bundle.js
-box/
+/server/node_modules/
+/server/box/
+.editorconfig
+/client/node_modules/

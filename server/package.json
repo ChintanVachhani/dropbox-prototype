@@ -1,0 +1,28 @@
+{
+  "name": "dropbox-prototype-server",
+  "version": "1.0.0",
+  "description": "A simple Dropbox replica.",
+  "scripts": {
+    "start": "nodemon ./app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Chintan Vachhani <chintan.vachhani10@gmail.com>",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "~1.18.2",
+    "cookie-parser": "~1.4.3",
+    "cors": "^2.8.4",
+    "cryptr": "^2.0.0",
+    "debug": "~2.6.9",
+    "ejs": "~2.5.7",
+    "express": "~4.15.5",
+    "fs-extra": "^4.0.2",
+    "jsonwebtoken": "^8.1.0",
+    "multer": "^1.3.0",
+    "mysql2": "^1.4.2",
+    "nodemon": "^1.12.1",
+    "npm-run-all": "^4.1.1",
+    "sequelize": "^4.13.8",
+    "zip-folder": "^1.0.0"
+  }
+}
