@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from "react-redux";
-import {signin, signup} from "../actions/user";
+import {getUser, signin, signup} from "../actions/user";
 
 class User extends Component {
 
@@ -39,7 +39,11 @@ class User extends Component {
       if (prevProps.user.error !== this.props.user.error) {
         this.setState({...this.state, error: this.props.user.error});
       } else if (this.props.user !== prevProps.user) {
-        if (this.props.user.status === 'signin' && this.props.user.userId && !this.props.user.error) {
+        if (this.props.user.status === 'authenticated' && this.props.user.userId && !this.props.user.error) {
+          this.props.handleAuthentication({
+            userId: this.props.user.userId,
+            token: localStorage.getItem('token')
+          });
           this.props.history.push('/');
         }
       }
@@ -57,7 +61,7 @@ class User extends Component {
           </div>
         </div>
         <div className="row">
-          <div className="col text-center mt-4">
+          <div className="col text-center fixed-top alert-container">
             {this.state.error ? <div className="alert alert-danger alert-dismissible fade show" role="alert" id="alert-div">
               <div id="alert-text-div">
                 {this.state.error}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -101,7 +105,7 @@ class User extends Component {
                                                               user: {...this.state.user, password: event.target.value},
                                                             });
                                                           }} required/></div>
-                  <button type="submit" className="btn btn-primary float-right">Sign in
+                  <button href="#" type="submit" className="btn btn-primary float-right" role="button">Sign in
                   </button>
                 </form>
               </div>
@@ -162,6 +166,7 @@ function mapDispatchToProps(dispatch) {
   return {
     handleSignin: (data) => dispatch(signin(data)),
     handleSignup: (data) => dispatch(signup(data)),
+    handleAuthentication: (data) => dispatch(getUser(data)),
   };
 }
 

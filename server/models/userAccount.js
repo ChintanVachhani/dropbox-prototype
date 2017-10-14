@@ -7,8 +7,11 @@ let UserAccount = sequelize.define('userAccount', {
     primaryKey: true,
     allowNull: false,
   },
-  overview: {
-    type: Sequelize.TEXT,
+  firstName: {
+    type: Sequelize.STRING,
+  },
+  lastName: {
+    type: Sequelize.STRING,
   },
   work: {
     type: Sequelize.STRING,
@@ -26,7 +29,7 @@ let UserAccount = sequelize.define('userAccount', {
     type: Sequelize.STRING,
   },
   zipcode: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.STRING,
   },
   interests: {
     type: Sequelize.TEXT,

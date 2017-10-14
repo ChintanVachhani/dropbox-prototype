@@ -96,7 +96,7 @@ export function getUser(data) {
     });
     axios({
       method: 'get',
-      url: `${SERVER_URL}/user/${data.userId}?token=${data.token}`,
+      url: `${SERVER_URL}/user?userId=${data.userId}&token=${data.token}`,
     })
       .then((result) => {
         if (result.response && result.response.status !== 200) {

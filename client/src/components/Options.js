@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {connect} from "react-redux";
 import {signout} from "../actions/user";
 
-class Home extends Component {
+class Options extends Component {
 
   componentWillMount() {
     if (this.props.user.status !== 'authenticated' || !this.props.user.userId || this.props.user.error) {
@@ -25,27 +25,14 @@ class Home extends Component {
   }
 
   render() {
-    //const {handleSignout} = this.props;
+    const {handleFileUpload} = this.props;
     return (
-      <div className="col-9" id="main-content-left">
-        <div id="starred-head">
-          <p className="lead lead-modified">Starred</p>
-          <hr/>
-          <div id="starred-content">
-            <div className="alert alert-light border rounded text-center" role="alert">
-              When you star items, they will appear here.
-            </div>
+      <div className="col-3 d-none d-sm-none d-md-none d-lg-block d-xl-block" id="main-content-right">
+        {this.props.board.toLoad === 'account' ? '' : <form>
+          <div className="form-group">
+            <label className="btn btn-primary btn-sm btn-block" role="button">Upload File<input type="file" id="upload-file-btn"/></label>
           </div>
-        </div>
-        <div id="recent-head" className="mt-5">
-          <p className="lead lead-modified">Recent Activity</p>
-          <hr/>
-          <div id="recent-content">
-            <div className="alert alert-light border rounded text-center" role="alert">
-              Your recent activities will appear here.
-            </div>
-          </div>
-        </div>
+        </form>}
       </div>
     );
   }
@@ -62,4 +49,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default connect(mapStateToProps, mapDispatchToProps)(Options);

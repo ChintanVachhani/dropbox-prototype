@@ -41,6 +41,19 @@ router.post('/signup', function (req, res, next) {
         .catch((error) => {
           console.error("Cannot create group directory for " + user.email + ". Error: " + error);
         });
+      let userAccount = {
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        work: '',
+        education: '',
+        address: '',
+        country: '',
+        city: '',
+        zipcode: '',
+        interests: '',
+      };
+      UserAccount.create(userAccount);
       res.status(201).json({
         message: 'Successfully signed up.',
         userId: user.email,
@@ -93,8 +106,8 @@ router.use('/', function (req, res, next) {
 });
 
 // Get user
-router.get('/:userId', function (req, res, next) {
-  User.find({attributes: ['firstName', 'lastName', 'email'], where: {email: req.params.userId}})
+router.get('/', function (req, res, next) {
+  User.find({attributes: ['firstName', 'lastName', 'email'], where: {email: req.query.userId}})
     .then((user) => {
       res.status(200).json({
         message: 'Successfully retrieved user information.',
@@ -142,31 +155,57 @@ router.get('/', function (req, res, next) {
   }
 });
 
-router.patch('/account', function (req, res, next) {
+// Get user account
+router.get('/account', function (req, res, next) {
   let decoded = jwt.decode(req.query.token);
-  if (req.body.userId != decoded.user.email) {
+  if (req.query.userId != decoded.user.email) {
     return res.status(401).json({
       title: 'Not Authenticated.',
       error: {message: 'Users do not match.'},
     });
   }
-  User.find({where: {email: req.body.userId}})
+  UserAccount.find({where: {email: req.query.userId}})
+    .then((userAccount) => {
+      res.status(200).json({
+        message: 'User account successfully updated.',
+        data: userAccount,
+      });
+    })
+    .catch(() => {
+      res.status(404).json({
+        title: 'Cannot update user account.',
+        error: {message: 'User account not found.'},
+      });
+    });
+});
+
+// Update user account
+router.patch('/account', function (req, res, next) {
+  let decoded = jwt.decode(req.query.token);
+  if (req.body.email != decoded.user.email) {
+    return res.status(401).json({
+      title: 'Not Authenticated.',
+      error: {message: 'Users do not match.'},
+    });
+  }
+  User.find({where: {email: req.body.email}})
     .then((user) => {
-      UserAccount.find({where: {email: req.body.userId}})
+      UserAccount.find({where: {email: req.body.email}})
         .then((userAccount) => {
           userAccount.updateAttributes({
-            overview: req.body.overview,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
             work: req.body.work,
             education: req.body.education,
             address: req.body.address,
             country: req.body.country,
             city: req.body.city,
             zipcode: req.body.zipcode,
-            interests: req.bo.interests,
+            interests: req.body.interests,
           });
           res.status(200).json({
             message: 'User account successfully updated.',
-            userId: userAccount.email,
+            data: userAccount,
           });
         })
         .catch(() => {
@@ -183,4 +222,5 @@ router.patch('/account', function (req, res, next) {
         });
     });
 });
+
 module.exports = router;

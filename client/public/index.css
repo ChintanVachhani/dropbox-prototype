@@ -1,3 +1,18 @@
+html, body {
+  height: 100%;
+}
+
+#dropbox-logo-nav {
+  max-height: 32px;
+  max-width: 32px;
+  vertical-align: middle;
+  object-fit: contain;
+  display: inline-block;
+  margin-top: 40px;
+  margin-bottom: 25px;
+  margin-left: 15px;
+}
+
 #dropbox-logo {
   z-index: 4;
   max-height: 46px;
@@ -26,7 +41,7 @@
 #dropbox-sign-in-img {
   display: inline-block;
   vertical-align: middle;
-  margin-right: 90px;
+  margin-right: 85px;
   margin-top: 60px;
   margin-bottom: 110px;
 }
@@ -69,19 +84,128 @@
   display: inline-block;
 }
 
-#alert-text-div{
+#alert-text-div {
   float: left;
   position: relative;
 }
 
 #alert-close-btn {
   font-size: 18px;
-  position:absolute;
-  margin-right:0;
-  margin-bottom:0;
+  position: absolute;
+  margin-right: 0;
+  margin-bottom: 0;
 }
 
 #alert-close-btn-div {
   float: right;
   position: relative;
+}
+
+.fill {
+  min-height: 100%;
+  height: 100%;
+}
+
+.fill-85 {
+  min-height: 85%;
+  height: 85%;
+}
+
+.fill-15 {
+  min-height: 15%;
+  height: 15%;
+}
+
+#nav-left {
+  background-color: #f7f9fa;
+  padding-left: 25px;
+  font-size: 17px;
+  min-height: 100%;
+}
+
+.alert-container {
+  margin-top: 95px;
+}
+
+#main-body {
+
+}
+
+#main-header {
+  padding: 40px 45px;
+  background-color: white;
+}
+
+#main-content-left {
+  padding-right: 0;
+  padding-left: 45px;
+  padding-top: 5px;
+  font-size: 14px;
+  margin-top: 65px;
+}
+
+#main-content-right {
+  padding: 45px;
+  margin-top: 65px;
+}
+
+#page-heading {
+  font-size: x-large;
+}
+
+#userDropdownMenuLink {
+  height: 36px;
+  width: 36px;
+  text-align: center;
+  padding: 0.4rem 0;
+  font-weight: bold;
+}
+
+#userDropdownMenuItems {
+  box-shadow: 0 2px 2px #d0d4d9;
+}
+
+.lead-modified {
+  font-size: 14px;
+}
+
+.folder-icon, .file-icon {
+  color: #92ceff;
+  font-size: 38px;
+  margin-bottom: 3px;
+}
+
+.star-icon {
+  font-size: 18px;
+  margin-bottom: -9px;
+}
+
+.option-icon {
+  font-size: 22px;
+  margin-bottom: -7px;
+}
+
+.option-icon-btn {
+  margin: 0;
+  padding: 0;
+}
+
+.share-btn {
+  margin-bottom: -12px;
+}
+
+.text-icon-secondary {
+  color: #3ba0f3;
+}
+
+.directory-div, .file-div {
+  padding: 0 20px 0 20px;
+}
+
+.material-icons {
+  vertical-align: middle !important;
+}
+
+#upload-file-btn {
+  display: none;
 }

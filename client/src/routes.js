@@ -3,11 +3,12 @@ import {Route, IndexRoute} from 'react-router';
 
 import App from './components/App';
 import User from './components/User';
-import Home from './components/Home';
+import Board from './components/Board';
 
 export default (
   <Route path="/" component={App}>
-    <IndexRoute component={Home}/>
+    <IndexRoute component={Board}>
+    </IndexRoute>
     <Route path="login" component={User}/>
   </Route>
 );

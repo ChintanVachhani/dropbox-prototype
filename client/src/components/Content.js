@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {connect} from "react-redux";
 import {signout} from "../actions/user";
 
-class Home extends Component {
+class Content extends Component {
 
   componentWillMount() {
     if (this.props.user.status !== 'authenticated' || !this.props.user.userId || this.props.user.error) {
@@ -28,22 +28,11 @@ class Home extends Component {
     //const {handleSignout} = this.props;
     return (
       <div className="col-9" id="main-content-left">
-        <div id="starred-head">
-          <p className="lead lead-modified">Starred</p>
+        <div id="files-head">
+          <p className="lead lead-modified">Name</p>
           <hr/>
-          <div id="starred-content">
-            <div className="alert alert-light border rounded text-center" role="alert">
-              When you star items, they will appear here.
-            </div>
-          </div>
-        </div>
-        <div id="recent-head" className="mt-5">
-          <p className="lead lead-modified">Recent Activity</p>
-          <hr/>
-          <div id="recent-content">
-            <div className="alert alert-light border rounded text-center" role="alert">
-              Your recent activities will appear here.
-            </div>
+          <div id="files-content">
+
           </div>
         </div>
       </div>
@@ -62,4 +51,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default connect(mapStateToProps, mapDispatchToProps)(Content);

@@ -14,9 +14,7 @@ class App extends Component {
       userId: userId,
       token: token,
     });
-
   }
-
 
   render() {
     return (
@@ -38,6 +36,7 @@ function mapDispatchToProps(dispatch) {
 function mapStateToProps(state) {
   return {
     user: state.user,
+    board: state.board,
   };
 }
 

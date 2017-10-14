@@ -1,6 +1,6 @@
 import {SIGNIN, SIGNIN_SUCCESS, SIGNIN_FAILURE, SIGNUP, SIGNUP_SUCCESS, SIGNUP_FAILURE, SIGNOUT, GET_USER, GET_USER_SUCCESS, GET_USER_FAILURE} from "../actions/user";
 
-const INITIAL_STATE = {userId: null, status: null, error: null, loading: false};
+const INITIAL_STATE = {userId: null, firstName: null, lastName: null, status: null, error: null, loading: false};
 
 export default function (state = INITIAL_STATE, action) {
 
