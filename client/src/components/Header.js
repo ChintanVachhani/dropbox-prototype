@@ -40,7 +40,7 @@ class Header extends Component {
   render() {
     const {handleSignout, handleLoadAccount} = this.props;
     return (
-      <div className="col-10 ml-auto fixed-top" id="main-header">
+      <div className="col col-md-10 col-lg-10 col-xl-10 ml-auto fixed-top" id="main-header">
         <div className="float-left" id="page-heading">{this.props.board.pageTitle}</div>
         <div className="dropdown show float-right">
           <a className="btn btn-secondary rounded-circle" href="" role="button" id="userDropdownMenuLink"

@@ -36,7 +36,7 @@ class Board extends Component {
       <div className="container-fluid fill">
         <div className="row fill">
           <Navigation history={this.props.history}/>
-          <div className="col-10 ml-auto" id="main-body">
+          <div className="col col-md-10 col-lg-10 col-xl-10 ml-auto" id="main-body">
             <div className="row">
               <Header history={this.props.history}/>
             </div>

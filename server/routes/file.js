@@ -27,7 +27,7 @@ router.use('/', function (req, res, next) {
 // Get all files
 router.get('/', function (req, res, next) {
   let decoded = jwt.decode(req.query.token);
-  File.findAll({where: {owner: decoded.user.email, path: req.query.path}})
+  File.findAll({where: {owner: decoded.user.email, path: path.join(req.query.path)}})
     .then((files) => {
       res.status(200).json({
         message: 'Files retrieved successfully.',
@@ -89,6 +89,7 @@ router.get('/download', function (req, res, next) {
       error: {message: 'Users do not match.'},
     });
   }
+  console.log(path.resolve(serverConfig.box.path, decoded.user.email, req.query.path, req.query.name));
   res.download(path.resolve(serverConfig.box.path, decoded.user.email, req.query.path, req.query.name), req.query.name, function (err) {
     if (err) {
       console.log("File download failed.");
@@ -146,7 +147,7 @@ router.post('/', function (req, res, next) {
     File.findOrCreate({
       where: {
         name: req.file.originalname,
-        path: req.body.path,
+        path: path.join('root',req.body.path),
         owner: req.body.owner,
       },
     })
@@ -156,7 +157,7 @@ router.post('/', function (req, res, next) {
       .catch((error) => {
         console.error("Cannot create file. Error: " + error);
       });
-    fs.move(path.resolve(serverConfig.box.path, decoded.user.email, 'tmp', req.file.originalname), path.resolve(serverConfig.box.path, decoded.user.email, req.body.path, req.file.originalname), {overwrite: true})
+    fs.move(path.resolve(serverConfig.box.path, decoded.user.email, 'tmp', req.file.originalname), path.resolve(serverConfig.box.path, decoded.user.email, path.join('root',req.body.path), req.file.originalname), {overwrite: true})
       .then(() => {
         console.log("Saved file " + req.file.originalname);
       })
@@ -200,7 +201,7 @@ router.patch('/star', function (req, res, next) {
         });
       }
       file.updateAttributes({
-        starred: true,
+        starred: req.body.starred,
       });
       let activity = {
         email: decoded.user.email,
@@ -346,12 +347,13 @@ router.delete('/', function (req, res, next) {
           error: {message: 'Users do not match.'},
         });
       }
+      console.log(path.resolve(serverConfig.box.path, decoded.user.email, req.body.path, req.body.name));
       fs.pathExists(path.resolve(serverConfig.box.path, decoded.user.email, req.body.path, req.body.name))
         .then((exists) => {
           if (exists) {
             fs.remove(path.resolve(serverConfig.box.path, decoded.user.email, req.body.path, req.body.name))
               .then(() => {
-                File.destroy({where: {name: req.body.name, path: req.body.path, owner: req.body.owner}});
+                File.destroy({where: {name: req.body.name, path: req.body.path, owner: file.owner}});
                 console.log("Deleted file " + req.body.name);
                 let activity = {
                   email: decoded.user.email,

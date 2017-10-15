@@ -7,8 +7,7 @@ import Board from './components/Board';
 
 export default (
   <Route path="/" component={App}>
-    <IndexRoute component={Board}>
-    </IndexRoute>
+    <IndexRoute component={Board}/>
     <Route path="login" component={User}/>
   </Route>
 );

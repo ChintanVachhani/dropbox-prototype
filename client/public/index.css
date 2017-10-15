@@ -209,3 +209,18 @@ html, body {
 #upload-file-btn {
   display: none;
 }
+
+.new-folder-icon{
+  margin-bottom: 5px;
+}
+
+a:hover, a:visited, a:link, a:active
+{
+  text-decoration: none;
+}
+
+.center {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
