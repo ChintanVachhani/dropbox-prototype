@@ -3,6 +3,7 @@ export const FILES = 'FILES';
 export const ACCOUNT = 'ACCOUNT';
 export const UPDATE_PATH = 'UPDATE_PATH';
 export const LOADING_ERROR = 'LOADING_ERROR';
+export const CHANGE_PATH = 'CHANGE_PATH';
 
 export function loadHome() {
   return {
@@ -10,9 +11,10 @@ export function loadHome() {
   };
 }
 
-export function loadFiles() {
+export function loadFiles(path) {
   return {
     type: FILES,
+    response: path || '',
   };
 }
 
@@ -23,7 +25,7 @@ export function loadAccount() {
 }
 
 export function updatePath(path) {
-  return{
+  return {
     type: UPDATE_PATH,
     response: path,
   };
@@ -33,5 +35,12 @@ export function loadingError() {
   return {
     type: LOADING_ERROR,
     response: 'Something went wrong. Cannot load the page.',
+  };
+}
+
+export function changePath(path) {
+  return {
+    type: CHANGE_PATH,
+    response: path,
   };
 }

@@ -7,9 +7,15 @@ const SERVER_URL = 'http://localhost:8000';
 export const GET_FILES = 'GET_FILES';
 export const GET_FILES_SUCCESS = 'GET_FILES_SUCCESS';
 export const GET_FILES_FAILURE = 'GET_FILES_FAILURE';
+export const GET_STARRED_FILES = 'GET_STARRED_FILES';
+export const GET_STARRED_FILES_SUCCESS = 'GET_STARRED_FILES_SUCCESS';
+export const GET_STARRED_FILES_FAILURE = 'GET_STARRED_FILES_FAILURE';
 export const GET_DIRECTORIES = 'GET_DIRECTORIES';
 export const GET_DIRECTORIES_SUCCESS = 'GET_DIRECTORIES_SUCCESS';
 export const GET_DIRECTORIES_FAILURE = 'GET_DIRECTORIES_FAILURE';
+export const GET_STARRED_DIRECTORIES = 'GET_STARRED_DIRECTORIES';
+export const GET_STARRED_DIRECTORIES_SUCCESS = 'GET_STARRED_DIRECTORIES_SUCCESS';
+export const GET_STARRED_DIRECTORIES_FAILURE = 'GET_STARRED_DIRECTORIES_FAILURE';
 export const STAR_FILE = 'STAR_FILE';
 export const STAR_FILE_SUCCESS = 'STAR_FILE_SUCCESS';
 export const STAR_FILE_FAILURE = 'STAR_FILE_FAILURE';
@@ -30,6 +36,9 @@ export const CREATE_DIRECTORY_FAILURE = 'CREATE_DIRECTORY_FAILURE';
 export const DELETE_DIRECTORY = 'DELETE_DIRECTORY';
 export const DELETE_DIRECTORY_SUCCESS = 'DELETE_DIRECTORY_SUCCESS';
 export const DELETE_DIRECTORY_FAILURE = 'DELETE_DIRECTORY_FAILURE';
+export const GET_ACTIVITIES = 'GET_ACTIVITIES';
+export const GET_ACTIVITIES_SUCCESS = 'GET_ACTIVITIES_SUCCESS';
+export const GET_ACTIVITIES_FAILURE = 'GET_ACTIVITIES_FAILURE';
 
 export function getFiles(path) {
   return function (dispatch) {
@@ -62,6 +71,37 @@ export function getFiles(path) {
   };
 }
 
+export function getStarredFiles() {
+  return function (dispatch) {
+    dispatch({
+      type: GET_STARRED_FILES,
+    });
+    axios({
+      method: 'get',
+      url: `${SERVER_URL}/file/starred?token=${localStorage.getItem('token')}`,
+    })
+      .then((result) => {
+        if (result.response && result.response.status !== 200) {
+          dispatch({
+            type: GET_STARRED_FILES_FAILURE,
+            response: result.response.data.title + ' ' + result.response.data.error.message,
+          });
+        }
+        dispatch({
+          type: GET_STARRED_FILES_SUCCESS,
+          response: result.data.data,
+        });
+      }).catch((result) => {
+      if (result.response) {
+        dispatch({
+          type: GET_STARRED_FILES_FAILURE,
+          response: result.response.data.title + ' ' + result.response.data.error.message,
+        });
+      }
+    });
+  };
+}
+
 export function getDirectories(path) {
   return function (dispatch) {
     dispatch({
@@ -86,6 +126,37 @@ export function getDirectories(path) {
       if (result.response) {
         dispatch({
           type: GET_DIRECTORIES_FAILURE,
+          response: result.response.data.title + ' ' + result.response.data.error.message,
+        });
+      }
+    });
+  };
+}
+
+export function getStarredDirectories() {
+  return function (dispatch) {
+    dispatch({
+      type: GET_STARRED_DIRECTORIES,
+    });
+    axios({
+      method: 'get',
+      url: `${SERVER_URL}/directory/starred?token=${localStorage.getItem('token')}`,
+    })
+      .then((result) => {
+        if (result.response && result.response.status !== 200) {
+          dispatch({
+            type: GET_STARRED_DIRECTORIES_FAILURE,
+            response: result.response.data.title + ' ' + result.response.data.error.message,
+          });
+        }
+        dispatch({
+          type: GET_STARRED_DIRECTORIES_SUCCESS,
+          response: result.data.data,
+        });
+      }).catch((result) => {
+      if (result.response) {
+        dispatch({
+          type: GET_STARRED_DIRECTORIES_FAILURE,
           response: result.response.data.title + ' ' + result.response.data.error.message,
         });
       }
@@ -308,6 +379,37 @@ export function deleteDirectory(data) {
       if (result.response) {
         dispatch({
           type: DELETE_DIRECTORY_FAILURE,
+          response: result.response.data.title + ' ' + result.response.data.error.message,
+        });
+      }
+    });
+  };
+}
+
+export function getActivities(count) {
+  return function (dispatch) {
+    dispatch({
+      type: GET_ACTIVITIES,
+    });
+    axios({
+      method: 'get',
+      url: `${SERVER_URL}/activity?count=${count}&token=${localStorage.getItem('token')}`,
+    })
+      .then((result) => {
+        if (result.response && result.response.status !== 200) {
+          dispatch({
+            type: GET_ACTIVITIES_FAILURE,
+            response: result.response.data.title + ' ' + result.response.data.error.message,
+          });
+        }
+        dispatch({
+          type: GET_ACTIVITIES_SUCCESS,
+          response: result.data.data,
+        });
+      }).catch((result) => {
+      if (result.response) {
+        dispatch({
+          type: GET_ACTIVITIES_FAILURE,
           response: result.response.data.title + ' ' + result.response.data.error.message,
         });
       }

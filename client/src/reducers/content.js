@@ -24,10 +24,11 @@ import {
   DOWNLOAD_DIRECTORY,
   STAR_DIRECTORY_FAILURE,
   STAR_DIRECTORY_SUCCESS,
-  STAR_DIRECTORY,
+  STAR_DIRECTORY, GET_ACTIVITIES, GET_ACTIVITIES_SUCCESS, GET_ACTIVITIES_FAILURE, GET_STARRED_FILES, GET_STARRED_FILES_SUCCESS, GET_STARRED_FILES_FAILURE, GET_STARRED_DIRECTORIES,
+  GET_STARRED_DIRECTORIES_SUCCESS, GET_STARRED_DIRECTORIES_FAILURE,
 } from "../actions/content";
 
-const INITIAL_STATE = {files: null, directories: null, error: null, alert: null};
+const INITIAL_STATE = {files: null, directories: null, starredFiles: null, starredDirectories: null, activities: null, error: null, alert: null};
 
 export default function (state = INITIAL_STATE, action) {
   switch (action.type) {
@@ -83,6 +84,24 @@ export default function (state = INITIAL_STATE, action) {
       return {...state, error: action.response, alert: null};
     case DOWNLOAD_DIRECTORY:
       return {...state, error: null, alert: action.response};
+    case GET_ACTIVITIES:
+      return {...state, activities: null, error: null, alert: null};
+    case GET_ACTIVITIES_SUCCESS:
+      return {...state, activities: action.response, error: null, alert: null};
+    case GET_ACTIVITIES_FAILURE:
+      return {...state, activities: null, error: action.response, alert: null};
+    case GET_STARRED_FILES:
+      return {...state, starredFiles: null, error: null, alert: null};
+    case GET_STARRED_FILES_SUCCESS:
+      return {...state, starredFiles: action.response, error: null, alert: null};
+    case GET_STARRED_FILES_FAILURE:
+      return {...state, starredFiles: null, error: action.response, alert: null};
+    case GET_STARRED_DIRECTORIES:
+      return {...state, starredDirectories: null, error: null, alert: null};
+    case GET_STARRED_DIRECTORIES_SUCCESS:
+      return {...state, starredDirectories: action.response, error: null, alert: null};
+    case GET_STARRED_DIRECTORIES_FAILURE:
+      return {...state, starredDirectories: null, error: action.response, alert: null};
     default:
       return state;
   }

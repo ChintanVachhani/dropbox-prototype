@@ -9,7 +9,7 @@ class Content extends Component {
   componentWillMount() {
     if (this.props.user.status !== 'authenticated' || !this.props.user.userId || this.props.user.error) {
       this.props.history.push('/login');
-    } else {
+    } else{
       let path = this.props.board.currentPath;
       this.props.handleGetFiles(path);
       this.props.handleGetDirectories(path);
@@ -33,9 +33,6 @@ class Content extends Component {
   }
 
   render() {
-    //const {handleGetFiles, handleGetDirectories} = this.props;
-    console.log(this.props.content.files);
-    console.log(this.props.content.directories);
     return (
       <div className="col-9" id="main-content-left">
         <div id="files-head">

@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from "react-redux";
 import {createDirectory, getDirectories, getFiles, uploadFile} from "../actions/content";
+import {loadFiles} from "../actions/board";
 
 class Options extends Component {
 
@@ -36,7 +37,7 @@ class Options extends Component {
   }
 
   render() {
-    const {handleFileUpload, handleDirectoryCreate} = this.props;
+    const {handleFileUpload, handleDirectoryCreate, handleLoadFiles} = this.props;
     return (
       <div className="col-3 d-none d-sm-none d-md-none d-lg-block d-xl-block text-center" id="main-content-right">
         {this.props.board.toLoad === 'account' ? '' :
@@ -50,6 +51,7 @@ class Options extends Component {
                       path: this.props.board.currentPath,
                       owner: localStorage.getItem('userId'),
                     });
+                    handleLoadFiles();
                   }
                 }/></label>
               </div>
@@ -79,6 +81,7 @@ class Options extends Component {
                         path: this.props.board.currentPath,
                         owner: localStorage.getItem('userId'),
                       });
+                      handleLoadFiles();
                     }}>Save changes
                     </button>
                   </div>
@@ -104,6 +107,9 @@ function mapDispatchToProps(dispatch) {
     handleDirectoryCreate: (data) => dispatch(createDirectory(data)),
     handleGetFiles: (path) => dispatch(getFiles(path)),
     handleGetDirectories: (path) => dispatch(getDirectories(path)),
+    handleLoadFiles: () => {
+      dispatch(loadFiles())
+    },
   };
 }
 

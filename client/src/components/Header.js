@@ -37,11 +37,22 @@ class Header extends Component {
     }
   }
 
+  renderPath(currentPath) {
+    let pathArray = currentPath.split('\\');
+    let displayPath = '';
+    for (let i = 1; i < pathArray.length; ++i) {
+      displayPath += "  »  " + pathArray[i];
+    }
+    console.log(displayPath);
+    return displayPath;
+  }
+
   render() {
     const {handleSignout, handleLoadAccount} = this.props;
     return (
       <div className="col col-md-10 col-lg-10 col-xl-10 ml-auto fixed-top" id="main-header">
-        <div className="float-left" id="page-heading">{this.props.board.pageTitle}</div>
+        <div className="float-left"
+             id="page-heading">{this.props.board.toLoad === 'files' ? 'Dropbox' + this.renderPath(this.props.board.currentPath) : this.props.board.pageTitle}</div>
         <div className="dropdown show float-right">
           <a className="btn btn-secondary rounded-circle" href="" role="button" id="userDropdownMenuLink"
              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

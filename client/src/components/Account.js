@@ -46,7 +46,6 @@ class Account extends Component {
   }
 
   componentWillReceiveProps(nextProps, nextState) {
-    //console.log(nextProps.account.user);
     if (nextProps.user.status !== 'authenticated' || !nextProps.user.userId || nextProps.user.error) {
       this.props.history.push('/login');
     }

@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import {connect} from "react-redux";
-import {starFile, downloadFile, deleteFile, getDirectories, getFiles} from "../actions/content";
+import {starFile, downloadFile, deleteFile, getDirectories, getFiles, getStarredFiles, getStarredDirectories, getActivities} from "../actions/content";
+import {changePath} from "../actions/board";
 
 class File extends Component {
 
   componentWillMount() {
-    console.log('1');
     if (this.props.user.status !== 'authenticated' || !this.props.user.userId || this.props.user.error) {
       this.props.history.push('/login');
     }
@@ -25,9 +25,15 @@ class File extends Component {
     } else if (this.props.board !== prevProps.board) {
       this.props.history.push('/');
     } else if (this.props.content.alert !== prevProps.content.alert) {
-      let path = this.props.board.currentPath;
-      this.props.handleGetFiles(path);
-      this.props.handleGetDirectories(path);
+      if(this.props.board.toLoad !== 'files'){
+        this.props.handleGetStarredFiles();
+        this.props.handleGetStarredDirectories();
+        this.props.handleGetActivities(5);
+      } else{
+        let path = this.props.board.currentPath;
+        this.props.handleGetFiles(path);
+        this.props.handleGetDirectories(path);
+      }
     }
   }
 
@@ -93,6 +99,10 @@ function mapDispatchToProps(dispatch) {
     handleDeleteFile: (data) => dispatch(deleteFile(data)),
     handleGetFiles: (path) => dispatch(getFiles(path)),
     handleGetDirectories: (path) => dispatch(getDirectories(path)),
+    handleChangePath: (path) => dispatch(changePath(path)),
+    handleGetStarredFiles: () => dispatch(getStarredFiles()),
+    handleGetStarredDirectories: () => dispatch(getStarredDirectories()),
+    handleGetActivities: (count) => dispatch(getActivities(count)),
   };
 }
 

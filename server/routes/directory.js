@@ -93,6 +93,24 @@ router.get('/', function (req, res, next) {
     });
 });
 
+// Get all starred directories
+router.get('/starred', function (req, res, next) {
+  let decoded = jwt.decode(req.query.token);
+  Directory.findAll({where: {owner: decoded.user.email, starred: true}})
+    .then((directories) => {
+      res.status(200).json({
+        message: 'Directories retrieved successfully.',
+        data: directories,
+      });
+    })
+    .catch(() => {
+      res.status(500).json({
+        title: 'Cannot retrieve directories.',
+        error: {message: 'Internal server error.'},
+      });
+    });
+});
+
 // Get a directory from link
 router.get('/link/:path/:directoryName', function (req, res, next) {
   zipFolder(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path), req.params.directoryName), path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path).split(path.sep)[0], 'tmp', req.params.directoryName) + '.zip', function (error) {
@@ -233,7 +251,7 @@ router.patch('/star', function (req, res, next) {
       });
       let activity = {
         email: decoded.user.email,
-        log: "Starred " + directory.name,
+        log: "Toggled Star for " + directory.name,
       };
       Activity.create(activity)
         .then((activity) => {

@@ -42,6 +42,24 @@ router.get('/', function (req, res, next) {
     });
 });
 
+// Get all starred files
+router.get('/starred', function (req, res, next) {
+  let decoded = jwt.decode(req.query.token);
+  File.findAll({where: {owner: decoded.user.email, starred: true}})
+    .then((files) => {
+      res.status(200).json({
+        message: 'Files retrieved successfully.',
+        data: files,
+      });
+    })
+    .catch(() => {
+      res.status(500).json({
+        title: 'Cannot retrieve files.',
+        error: {message: 'Internal server error.'},
+      });
+    });
+});
+
 // Get a file from link
 router.get('/link/:path/:fileName', function (req, res, next) {
   res.download(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path), req.params.fileName), req.params.fileName, function (err) {
@@ -147,7 +165,7 @@ router.post('/', function (req, res, next) {
     File.findOrCreate({
       where: {
         name: req.file.originalname,
-        path: path.join('root',req.body.path),
+        path: path.join('root', req.body.path),
         owner: req.body.owner,
       },
     })
@@ -157,7 +175,7 @@ router.post('/', function (req, res, next) {
       .catch((error) => {
         console.error("Cannot create file. Error: " + error);
       });
-    fs.move(path.resolve(serverConfig.box.path, decoded.user.email, 'tmp', req.file.originalname), path.resolve(serverConfig.box.path, decoded.user.email, path.join('root',req.body.path), req.file.originalname), {overwrite: true})
+    fs.move(path.resolve(serverConfig.box.path, decoded.user.email, 'tmp', req.file.originalname), path.resolve(serverConfig.box.path, decoded.user.email, path.join('root', req.body.path), req.file.originalname), {overwrite: true})
       .then(() => {
         console.log("Saved file " + req.file.originalname);
       })
@@ -205,7 +223,7 @@ router.patch('/star', function (req, res, next) {
       });
       let activity = {
         email: decoded.user.email,
-        log: "Starred " + file.name,
+        log: "Toggled Star for " + file.name,
       };
       Activity.create(activity)
         .then((activity) => {
