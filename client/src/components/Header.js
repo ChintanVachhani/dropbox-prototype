@@ -54,7 +54,7 @@ class Header extends Component {
         <div className="float-left"
              id="page-heading">{this.props.board.toLoad === 'files' ? 'Dropbox' + this.renderPath(this.props.board.currentPath) : this.props.board.pageTitle}</div>
         <div className="dropdown show float-right">
-          <a className="btn btn-secondary rounded-circle" href="" role="button" id="userDropdownMenuLink"
+          <a className="btn btn-danger rounded-circle" href="" role="button" id="userDropdownMenuLink"
              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             {this.state.initials}
           </a>

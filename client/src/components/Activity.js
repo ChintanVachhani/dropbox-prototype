@@ -30,7 +30,7 @@ class Activity extends Component {
     const colorClass = activity.log.split(' ')[0] === 'Toggled' ? 'text text-primary' : (
       activity.log.split(' ')[0] === 'Deleted' ? 'text text-danger' : (
         activity.log.split(' ')[0] === 'Uploaded' ? 'text text-warning' : (
-          activity.log.split(' ')[0] === 'Downloaded' ? 'text text-success' : 'text text-secondary'
+          activity.log.split(' ')[0] === 'Downloaded' || activity.log.split(' ')[0] === 'Created'? 'text text-success' : 'text text-secondary'
         )
       )
     );

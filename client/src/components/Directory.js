@@ -1,12 +1,21 @@
 import React, {Component} from 'react';
 import {connect} from "react-redux";
-import {deleteDirectory, downloadDirectory, getActivities, getDirectories, getFiles, getStarredDirectories, getStarredFiles, starDirectory} from "../actions/content";
+import {
+  createShareLinkDirectory, deleteDirectory, downloadDirectory, getActivities, getDirectories, getFiles, getStarredDirectories, getStarredFiles, shareDirectory,
+  starDirectory,
+} from "../actions/content";
 import {changePath, loadFiles} from "../actions/board";
 
 
 class Directory extends Component {
+  state = {
+    sharers: '',
+  };
 
   componentWillMount() {
+    this.setState({
+      sharers: '',
+    });
     if (this.props.user.status !== 'authenticated' || !this.props.user.userId || this.props.user.error) {
       this.props.history.push('/login');
     }
@@ -26,11 +35,11 @@ class Directory extends Component {
     } else if (this.props.board !== prevProps.board) {
       this.props.history.push('/');
     } else if (this.props.content.alert !== prevProps.content.alert) {
-      if(this.props.board.toLoad !== 'files'){
+      if (this.props.board.toLoad !== 'files') {
         this.props.handleGetStarredFiles();
         this.props.handleGetStarredDirectories();
         this.props.handleGetActivities(5);
-      } else{
+      } else {
         let path = this.props.board.currentPath;
         this.props.handleGetFiles(path);
         this.props.handleGetDirectories(path);
@@ -39,7 +48,7 @@ class Directory extends Component {
   }
 
   render() {
-    const {key, directory, handleStarDirectory, handleDownloadDirectory, handleDeleteDirectory} = this.props;
+    const {key, directory, handleStarDirectory, handleDownloadDirectory, handleDeleteDirectory, handleCreateShareLinkDirectory, handleDirectoryShare} = this.props;
     return (
       <div>
         <div className="directory-div clearfix">
@@ -64,7 +73,7 @@ class Directory extends Component {
             }
 
           }}>
-            <i className="material-icons folder-icon">folder</i><span>&nbsp;&nbsp;{directory.name}&nbsp;&nbsp;</span>
+            <i className="material-icons folder-icon">{directory.shared ? 'folder_shared' : 'folder'}</i><span>&nbsp;&nbsp;{directory.name}&nbsp;&nbsp;</span>
           </a>
           <span className="float-right"><a href=""><i className="material-icons star-icon text-primary" onClick={(e) => {
             e.preventDefault();
@@ -76,9 +85,57 @@ class Directory extends Component {
               directory.starred = !directory.starred
             }
           }}>{directory.starred ? 'star' : 'star_border'}</i></a>&nbsp;&nbsp;&nbsp;&nbsp;
-            <a className="btn btn-light btn-sm share-btn" href="#" role="button">Share</a>&nbsp;&nbsp;&nbsp;&nbsp;
-            <span className="dropdown show">
-                        <a className="btn text-center option-icon-btn" href="#" role="button"
+
+            <a className="btn btn-light btn-sm share-btn" href="" role="button" data-toggle="modal" data-target={"#" + directory.id}>Share</a>&nbsp;&nbsp;&nbsp;&nbsp;
+
+            <div className="modal center fade mh-75" id={directory.id} tabIndex="-1" role="dialog" aria-labelledby="share-modal-label" aria-hidden="true">
+            <div className="modal-dialog" role="document">
+            <div className="modal-content">
+             <div className="modal-header">
+
+             <input type="text" className="form-control" placeholder="To: ',' separated emails" autoFocus onChange={(e) => {
+               this.setState({
+                 ...this.state,
+                 sharers: e.target.value,
+               });
+             }
+             }/>
+
+             </div>
+            <div className="modal-body">
+              {directory.link ? <input type="text" className="form-control form-control-sm" value={directory.link || ''} readOnly/> : ''}
+              {directory.link ?
+                <span><i className="material-icons text-secondary float-left">link</i><p
+                  className="lead lead-modified float-left"><strong>Anyone</strong> with this <strong>link</strong> can download this directory.</p></span> :
+                <span><i className="material-icons text-secondary float-left">link</i><p className="lead lead-modified float-left"><strong>No</strong> link created yet.</p><p
+                  className="lead lead-modified float-right"><a href="" data-dismiss="modal" onClick={(e) => {
+                  e.preventDefault();
+                  handleCreateShareLinkDirectory(directory.id);
+                  if (!this.props.content.error) {
+                    directory.link = this.props.content.alert;
+                  }
+                }}>Create</a> a shareable link.</p></span>}
+            </div>
+
+              <div className="modal-footer">
+           <button type="button" className="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+             <button type="button" className="btn btn-primary btn-sm" data-dismiss="modal" onClick={(e) => {
+               let sharers = this.state.sharers.split(',');
+               handleDirectoryShare({
+                 id: directory.id,
+                 name: directory.name,
+                 path: directory.path,
+                 owner: directory.owner,
+                 sharers: sharers,
+               });
+             }}>Share</button>
+            </div>
+
+            </div>
+            </div>
+          </div>
+            <span className="dropdown show clearfix">
+                        <a className="btn text-center option-icon-btn" href="" role="button"
                            data-toggle="dropdown"
                            aria-haspopup="true" aria-expanded="false">
                           <i className="material-icons option-icon text-secondary">more_horiz</i>
@@ -104,7 +161,8 @@ class Directory extends Component {
                             }
                           }}>Delete</a>
                         </span>
-                      </span></span>
+                      </span>
+          </span>
         </div>
         <hr/>
       </div>
@@ -126,6 +184,8 @@ function mapDispatchToProps(dispatch) {
     handleGetStarredFiles: () => dispatch(getStarredFiles()),
     handleGetStarredDirectories: () => dispatch(getStarredDirectories()),
     handleGetActivities: (count) => dispatch(getActivities(count)),
+    handleCreateShareLinkDirectory: (data) => dispatch(createShareLinkDirectory(data)),
+    handleDirectoryShare: (data) => dispatch(shareDirectory(data)),
   };
 }
 

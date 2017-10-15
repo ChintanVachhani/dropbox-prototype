@@ -40,7 +40,7 @@ class Options extends Component {
     const {handleFileUpload, handleDirectoryCreate, handleLoadFiles} = this.props;
     return (
       <div className="col-3 d-none d-sm-none d-md-none d-lg-block d-xl-block text-center" id="main-content-right">
-        {this.props.board.toLoad === 'account' ? '' :
+        {this.props.board.toLoad === 'account' || this.props.board.toLoad === 'sharing' ? '' :
           <div>
             <form>
               <div className="form-group">

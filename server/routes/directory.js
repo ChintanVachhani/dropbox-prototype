@@ -13,6 +13,31 @@ let File = require('../models/file');
 let SharedFile = require('../models/sharedFile');
 let zipFolder = require('zip-folder');
 
+// Get a directory from link
+router.get('/link/:path/:directoryName', function (req, res, next) {
+  zipFolder(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path), req.params.directoryName), path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path).split(path.sep)[0], 'tmp', req.params.directoryName) + '.zip', function (error) {
+    if (error) {
+      console.log("Directory cannot be zipped. " + error);
+    } else {
+      console.log('Directory zipped successfully.');
+      res.download(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path).split(path.sep)[0], 'tmp', req.params.directoryName) + '.zip', req.params.directoryName + '.zip', function (err) {
+        if (err) {
+          console.log("Directory download failed.");
+        } else {
+          fs.remove(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path).split(path.sep)[0], 'tmp', req.params.directoryName) + '.zip')
+            .then(() => {
+              console.log("Deleted zipped directory.");
+            })
+            .catch(() => {
+              console.log("Cannot delete zipped directory.");
+            });
+          console.log("Directory downloaded successfully.");
+        }
+      });
+    }
+  });
+});
+
 // Session Authentication
 router.use('/', function (req, res, next) {
   jwt.verify(req.query.token, 'secret', function (error, decoded) {
@@ -109,31 +134,6 @@ router.get('/starred', function (req, res, next) {
         error: {message: 'Internal server error.'},
       });
     });
-});
-
-// Get a directory from link
-router.get('/link/:path/:directoryName', function (req, res, next) {
-  zipFolder(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path), req.params.directoryName), path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path).split(path.sep)[0], 'tmp', req.params.directoryName) + '.zip', function (error) {
-    if (error) {
-      console.log("Directory cannot be zipped. " + error);
-    } else {
-      console.log('Directory zipped successfully.');
-      res.download(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path).split(path.sep)[0], 'tmp', req.params.directoryName) + '.zip', req.params.directoryName + '.zip', function (err) {
-        if (err) {
-          console.log("Directory download failed.");
-        } else {
-          fs.remove(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path).split(path.sep)[0], 'tmp', req.params.directoryName) + '.zip')
-            .then(() => {
-              console.log("Deleted zipped directory.");
-            })
-            .catch(() => {
-              console.log("Cannot delete zipped directory.");
-            });
-          console.log("Directory downloaded successfully.");
-        }
-      });
-    }
-  });
 });
 
 // Create a shareable link
@@ -440,10 +440,10 @@ router.patch('/', function (req, res, next) {
           error: {message: 'Users do not match.'},
         });
       }
-      fs.pathExists(path.resolve(serverConfig.box.path, decoded.user.email, req.body.path, directory.name))
+      fs.pathExists(path.resolve(serverConfig.box.path, directory.owner, req.body.path, directory.name))
         .then((exists) => {
           if (exists) {
-            fs.rename(path.resolve(serverConfig.box.path, decoded.user.email, req.body.path, directory.name), path.resolve(serverConfig.box.path, decoded.user.email, req.body.path, req.body.name))
+            fs.rename(path.resolve(serverConfig.box.path, directory.owner, req.body.path, directory.name), path.resolve(serverConfig.box.path, directory.owner, req.body.path, req.body.name))
               .then(() => {
                 directory.updateAttributes({
                   name: req.body.name,
@@ -494,10 +494,10 @@ router.delete('/', function (req, res, next) {
           error: {message: 'Users do not match.'},
         });
       }
-      fs.pathExists(path.resolve(serverConfig.box.path, decoded.user.email, req.body.path, req.body.name))
+      fs.pathExists(path.resolve(serverConfig.box.path, directory.owner, req.body.path, req.body.name))
         .then((exists) => {
           if (exists) {
-            fs.remove(path.resolve(serverConfig.box.path, decoded.user.email, req.body.path, req.body.name))
+            fs.remove(path.resolve(serverConfig.box.path, directory.owner, req.body.path, req.body.name))
               .then(() => {
                 Directory.destroy({where: {name: req.body.name, path: req.body.path, owner: directory.owner}});
                 console.log("Deleted directory " + req.body.name);

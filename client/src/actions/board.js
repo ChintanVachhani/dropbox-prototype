@@ -1,9 +1,9 @@
 export const HOME = 'HOME';
 export const FILES = 'FILES';
 export const ACCOUNT = 'ACCOUNT';
-export const UPDATE_PATH = 'UPDATE_PATH';
 export const LOADING_ERROR = 'LOADING_ERROR';
 export const CHANGE_PATH = 'CHANGE_PATH';
+export const SHARING = 'SHARING';
 
 export function loadHome() {
   return {
@@ -18,16 +18,15 @@ export function loadFiles(path) {
   };
 }
 
-export function loadAccount() {
+export function loadSharing() {
   return {
-    type: ACCOUNT,
+    type: SHARING,
   };
 }
 
-export function updatePath(path) {
+export function loadAccount() {
   return {
-    type: UPDATE_PATH,
-    response: path,
+    type: ACCOUNT,
   };
 }
 

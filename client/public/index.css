@@ -195,6 +195,10 @@ html, body {
   padding: 0;
 }
 
+.share-icon{
+  margin-bottom: -12px;
+}
+
 .share-btn {
   margin-bottom: -12px;
 }
@@ -229,3 +233,4 @@ a:hover, a:visited, a:link, a:active
   top: 50%;
   transform: translate(-50%, -50%);
 }
+

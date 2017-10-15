@@ -20,7 +20,7 @@ class Home extends Component {
   componentWillReceiveProps(nextProps, nextState) {
     if (nextProps.user.status !== 'authenticated' || !nextProps.user.userId || nextProps.user.error) {
       this.props.history.push('/login');
-    }else if (this.props.board !== nextProps.board || this.props.content !== nextProps.content) {
+    } else if (this.props.board !== nextProps.board || this.props.content !== nextProps.content) {
       this.props.history.push('/');
     }
   }
@@ -41,12 +41,13 @@ class Home extends Component {
     return (
       <div className="col-9" id="main-content-left">
         <div id="starred-head">
-          <p className="lead lead-modified">Starred</p>
+          <p className="lead lead-modified"><strong>Starred</strong></p>
           <hr/>
           <div id="starred-content">
-            <div className="alert alert-light border rounded text-center" role="alert">
-              When you star items, they will appear here.
-            </div>
+              <div className="alert alert-light border rounded text-center" role="alert">
+                When you star files & directories, they will appear here.
+              </div>
+
             {this.props.content.starredDirectories ?
               this.props.content.starredDirectories.map((directory, index) => {
                 return (<Directory key={index} directory={directory} history={this.props.history}/>);
@@ -61,7 +62,7 @@ class Home extends Component {
           </div>
         </div>
         <div id="recent-head" className="mt-5">
-          <p className="lead lead-modified">Recent Activity</p>
+          <p className="lead lead-modified"><strong>Recent Activity</strong></p>
           <hr/>
           <div id="recent-content">
             <div className="alert alert-light border rounded text-center" role="alert">

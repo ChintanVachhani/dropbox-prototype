@@ -11,6 +11,17 @@ let File = require('../models/file');
 let SharedFile = require('../models/sharedFile');
 let Activity = require('../models/activity');
 
+// Get a file from link
+router.get('/link/:path/:fileName', function (req, res, next) {
+  res.download(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path), req.params.fileName), req.params.fileName, function (err) {
+    if (err) {
+      console.log("File download failed.");
+    } else {
+      console.log("File downloaded successfully.");
+    }
+  });
+});
+
 // Session Authentication
 router.use('/', function (req, res, next) {
   jwt.verify(req.query.token, 'secret', function (error, decoded) {
@@ -58,17 +69,6 @@ router.get('/starred', function (req, res, next) {
         error: {message: 'Internal server error.'},
       });
     });
-});
-
-// Get a file from link
-router.get('/link/:path/:fileName', function (req, res, next) {
-  res.download(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path), req.params.fileName), req.params.fileName, function (err) {
-    if (err) {
-      console.log("File download failed.");
-    } else {
-      console.log("File downloaded successfully.");
-    }
-  });
 });
 
 // Create a shareable link
@@ -311,10 +311,10 @@ router.patch('/', function (req, res, next) {
           error: {message: 'Users do not match.'},
         });
       }
-      fs.pathExists(path.resolve(serverConfig.box.path, decoded.user.email, req.body.path, file.name))
+      fs.pathExists(path.resolve(serverConfig.box.path, file.owner, req.body.path, file.name))
         .then((exists) => {
           if (exists) {
-            fs.rename(path.resolve(serverConfig.box.path, decoded.user.email, req.body.path, file.name), path.resolve(serverConfig.box.path, decoded.user.email, req.body.path, req.body.name))
+            fs.rename(path.resolve(serverConfig.box.path, file.owner, req.body.path, file.name), path.resolve(serverConfig.box.path, file.owner, req.body.path, req.body.name))
               .then(() => {
                 file.updateAttributes({
                   name: req.body.name,
@@ -365,11 +365,11 @@ router.delete('/', function (req, res, next) {
           error: {message: 'Users do not match.'},
         });
       }
-      console.log(path.resolve(serverConfig.box.path, decoded.user.email, req.body.path, req.body.name));
-      fs.pathExists(path.resolve(serverConfig.box.path, decoded.user.email, req.body.path, req.body.name))
+      console.log(path.resolve(serverConfig.box.path, file.owner, req.body.path, req.body.name));
+      fs.pathExists(path.resolve(serverConfig.box.path, file.owner, req.body.path, req.body.name))
         .then((exists) => {
           if (exists) {
-            fs.remove(path.resolve(serverConfig.box.path, decoded.user.email, req.body.path, req.body.name))
+            fs.remove(path.resolve(serverConfig.box.path, file.owner, req.body.path, req.body.name))
               .then(() => {
                 File.destroy({where: {name: req.body.name, path: req.body.path, owner: file.owner}});
                 console.log("Deleted file " + req.body.name);

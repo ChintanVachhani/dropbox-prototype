@@ -39,6 +39,41 @@ export const DELETE_DIRECTORY_FAILURE = 'DELETE_DIRECTORY_FAILURE';
 export const GET_ACTIVITIES = 'GET_ACTIVITIES';
 export const GET_ACTIVITIES_SUCCESS = 'GET_ACTIVITIES_SUCCESS';
 export const GET_ACTIVITIES_FAILURE = 'GET_ACTIVITIES_FAILURE';
+export const CREATE_SHARE_LINK = 'CREATE_SHARE_LINK';
+export const CREATE_SHARE_LINK_SUCCESS = 'CREATE_SHARE_LINK_SUCCESS';
+export const CREATE_SHARE_LINK_FAILURE = 'CREATE_SHARE_LINK_FAILURE';
+export const USER_SEARCH = 'USER_SEARCH';
+export const USER_SEARCH_SUCCESS = 'USER_SEARCH_SUCCESS';
+export const USER_SEARCH_FAILURE = 'USER_SEARCH_FAILURE';
+export const SHARE_FILE = 'SHARE_FILE';
+export const SHARE_FILE_SUCCESS = 'SHARE_FILE_SUCCESS';
+export const SHARE_FILE_FAILURE = 'SHARE_FILE_FAILURE';
+export const CREATE_SHARE_LINK_DIRECTORY = 'CREATE_SHARE_LINK_DIRECTORY';
+export const CREATE_SHARE_LINK_DIRECTORY_SUCCESS = 'CREATE_SHARE_LINK_DIRECTORY_SUCCESS';
+export const CREATE_SHARE_LINK_DIRECTORY_FAILURE = 'CREATE_SHARE_LINK_DIRECTORY_FAILURE';
+export const SHARE_DIRECTORY = 'SHARE_DIRECTORY';
+export const SHARE_DIRECTORY_SUCCESS = 'SHARE_DIRECTORY_SUCCESS';
+export const SHARE_DIRECTORY_FAILURE = 'SHARE_DIRECTORY_FAILURE';
+export const SHARED_GET_FILES = 'SHARED_GET_FILES';
+export const SHARED_GET_FILES_SUCCESS = 'SHARED_GET_FILES_SUCCESS';
+export const SHARED_GET_FILES_FAILURE = 'SHARED_GET_FILES_FAILURE';
+export const SHARED_LIST_FILES = 'SHARED_LIST_FILES';
+export const SHARED_LIST_FILES_SUCCESS = 'SHARED_LIST_FILES_SUCCESS';
+export const SHARED_LIST_FILES_FAILURE = 'SHARED_LIST_FILES_FAILURE';
+export const SHARED_GET_DIRECTORIES = 'SHARED_GET_DIRECTORIES';
+export const SHARED_GET_DIRECTORIES_SUCCESS = 'SHARED_GET_DIRECTORIES_SUCCESS';
+export const SHARED_GET_DIRECTORIES_FAILURE = 'SHARED_GET_DIRECTORIES_FAILURE';
+export const SHARED_LIST_DIRECTORIES = 'SHARED_LIST_DIRECTORIES';
+export const SHARED_LIST_DIRECTORIES_SUCCESS = 'SHARED_LIST_DIRECTORIES_SUCCESS';
+export const SHARED_LIST_DIRECTORIES_FAILURE = 'SHARED_LIST_DIRECTORIES_FAILURE';
+export const SHARED_STAR_FILE = 'SHARED_STAR_FILE';
+export const SHARED_STAR_FILE_SUCCESS = 'SHARED_STAR_FILE_SUCCESS';
+export const SHARED_STAR_FILE_FAILURE = 'SHARED_STAR_FILE_FAILURE';
+export const SHARED_DOWNLOAD_FILE = 'SHARED_DOWNLOAD_FILE';
+export const SHARED_STAR_DIRECTORY = 'SHARED_STAR_DIRECTORY';
+export const SHARED_STAR_DIRECTORY_SUCCESS = 'SHARED_STAR_DIRECTORY_SUCCESS';
+export const SHARED_STAR_DIRECTORY_FAILURE = 'SHARED_STAR_DIRECTORY_FAILURE';
+export const SHARED_DOWNLOAD_DIRECTORY = 'SHARED_DOWNLOAD_DIRECTORY';
 
 export function getFiles(path) {
   return function (dispatch) {
@@ -410,6 +445,302 @@ export function getActivities(count) {
       if (result.response) {
         dispatch({
           type: GET_ACTIVITIES_FAILURE,
+          response: result.response.data.title + ' ' + result.response.data.error.message,
+        });
+      }
+    });
+  };
+}
+
+export function createShareLink(id) {
+  return function (dispatch) {
+    dispatch({
+      type: CREATE_SHARE_LINK,
+    });
+    axios({
+      method: 'patch',
+      url: `${SERVER_URL}/file/link?token=${localStorage.getItem('token')}`,
+      data: {id: id},
+    })
+      .then((result) => {
+        if (result.response && result.response.status !== 200) {
+          dispatch({
+            type: CREATE_SHARE_LINK_FAILURE,
+            response: result.response.data.title + ' ' + result.response.data.error.message,
+          });
+        }
+        dispatch({
+          type: CREATE_SHARE_LINK_SUCCESS,
+          response: result.data.link,
+        });
+      }).catch((result) => {
+      if (result.response) {
+        dispatch({
+          type: CREATE_SHARE_LINK_FAILURE,
+          response: result.response.data.title + ' ' + result.response.data.error.message,
+        });
+      }
+    });
+  };
+}
+
+export function createShareLinkDirectory(id) {
+  return function (dispatch) {
+    dispatch({
+      type: CREATE_SHARE_LINK_DIRECTORY,
+    });
+    axios({
+      method: 'patch',
+      url: `${SERVER_URL}/directory/link?token=${localStorage.getItem('token')}`,
+      data: {id: id},
+    })
+      .then((result) => {
+        if (result.response && result.response.status !== 200) {
+          dispatch({
+            type: CREATE_SHARE_LINK_DIRECTORY_FAILURE,
+            response: result.response.data.title + ' ' + result.response.data.error.message,
+          });
+        }
+        dispatch({
+          type: CREATE_SHARE_LINK_DIRECTORY_SUCCESS,
+          response: result.data.link,
+        });
+      }).catch((result) => {
+      if (result.response) {
+        dispatch({
+          type: CREATE_SHARE_LINK_DIRECTORY_FAILURE,
+          response: result.response.data.title + ' ' + result.response.data.error.message,
+        });
+      }
+    });
+  };
+}
+
+
+export function userSearch(searchString) {
+  return function (dispatch) {
+    dispatch({
+      type: USER_SEARCH,
+    });
+    axios({
+      method: 'get',
+      url: `${SERVER_URL}/user/search?searchString=${searchString}&token=${localStorage.getItem('token')}`,
+    })
+      .then((result) => {
+        if (result.response && result.response.status !== 200) {
+          dispatch({
+            type: USER_SEARCH_FAILURE,
+            response: result.response.data.title + ' ' + result.response.data.error.message,
+          });
+        }
+        dispatch({
+          type: USER_SEARCH_SUCCESS,
+          response: result.data.data,
+        });
+      }).catch((result) => {
+      if (result.response) {
+        dispatch({
+          type: USER_SEARCH_FAILURE,
+          response: result.response.data.title + ' ' + result.response.data.error.message,
+        });
+      }
+    });
+  };
+}
+
+export function shareFile(data) {
+  return function (dispatch) {
+    dispatch({
+      type: SHARE_FILE,
+    });
+    axios({
+      method: 'patch',
+      url: `${SERVER_URL}/file/share?token=${localStorage.getItem('token')}`,
+      data: data,
+    })
+      .then((result) => {
+        if (result.response && result.response.status !== 200) {
+          dispatch({
+            type: SHARE_FILE_FAILURE,
+            response: result.response.data.title + ' ' + result.response.data.error.message,
+          });
+        }
+        dispatch({
+          type: SHARE_FILE_SUCCESS,
+          response: result.data.name + 'shared.',
+        });
+      }).catch((result) => {
+      if (result.response) {
+        dispatch({
+          type: SHARE_FILE_FAILURE,
+          response: result.response.data.title + ' ' + result.response.data.error.message,
+        });
+      }
+    });
+  };
+}
+
+export function shareDirectory(data) {
+  return function (dispatch) {
+    dispatch({
+      type: SHARE_DIRECTORY,
+    });
+    axios({
+      method: 'patch',
+      url: `${SERVER_URL}/directory/share?token=${localStorage.getItem('token')}`,
+      data: data,
+    })
+      .then((result) => {
+        if (result.response && result.response.status !== 200) {
+          dispatch({
+            type: SHARE_DIRECTORY_FAILURE,
+            response: result.response.data.title + ' ' + result.response.data.error.message,
+          });
+        }
+        dispatch({
+          type: SHARE_DIRECTORY_SUCCESS,
+          response: result.data.name + 'shared.',
+        });
+      }).catch((result) => {
+      if (result.response) {
+        dispatch({
+          type: SHARE_DIRECTORY_FAILURE,
+          response: result.response.data.title + ' ' + result.response.data.error.message,
+        });
+      }
+    });
+  };
+}
+
+export function downloadSharedDirectory(data) {
+}
+
+export function downloadSharedFile(data) {
+}
+
+export function starSharedDirectory(data) {
+}
+
+export function deleteSharedDirectory(data) {
+}
+
+export function listSharedFiles() {
+  return function (dispatch) {
+    dispatch({
+      type: SHARED_LIST_FILES,
+    });
+    axios({
+      method: 'get',
+      url: `${SERVER_URL}/sharedFile/list?token=${localStorage.getItem('token')}`,
+    })
+      .then((result) => {
+        if (result.response && result.response.status !== 200) {
+          dispatch({
+            type: SHARED_LIST_FILES_FAILURE,
+            response: result.response.data.title + ' ' + result.response.data.error.message,
+          });
+        }
+        dispatch({
+          type: SHARED_LIST_FILES_SUCCESS,
+          response: result.data.data,
+        });
+      }).catch((result) => {
+      if (result.response) {
+        dispatch({
+          type: SHARED_LIST_FILES_FAILURE,
+          response: result.response.data.title + ' ' + result.response.data.error.message,
+        });
+      }
+    });
+  };
+}
+
+export function getSharedFiles(data) {
+  return function (dispatch) {
+    dispatch({
+      type: SHARED_GET_FILES,
+    });
+    axios({
+      method: 'get',
+      url: `${SERVER_URL}/sharedFile?path=${data.path}&name=${data.name}&token=${localStorage.getItem('token')}`,
+    })
+      .then((result) => {
+        if (result.response && result.response.status !== 200) {
+          dispatch({
+            type: SHARED_GET_FILES_FAILURE,
+            response: result.response.data.title + ' ' + result.response.data.error.message,
+          });
+        }
+        dispatch({
+          type: SHARED_GET_FILES_SUCCESS,
+          response: result.data.data,
+        });
+      }).catch((result) => {
+      if (result.response) {
+        dispatch({
+          type: SHARED_GET_FILES_FAILURE,
+          response: result.response.data.title + ' ' + result.response.data.error.message,
+        });
+      }
+    });
+  };
+}
+
+export function listSharedDirectories() {
+  return function (dispatch) {
+    dispatch({
+      type: SHARED_LIST_DIRECTORIES,
+    });
+    axios({
+      method: 'get',
+      url: `${SERVER_URL}/sharedDirectory/list?token=${localStorage.getItem('token')}`,
+    })
+      .then((result) => {
+        if (result.response && result.response.status !== 200) {
+          dispatch({
+            type: SHARED_LIST_DIRECTORIES_FAILURE,
+            response: result.response.data.title + ' ' + result.response.data.error.message,
+          });
+        }
+        dispatch({
+          type: SHARED_LIST_DIRECTORIES_SUCCESS,
+          response: result.data.data,
+        });
+      }).catch((result) => {
+      if (result.response) {
+        dispatch({
+          type: SHARED_LIST_DIRECTORIES_FAILURE,
+          response: result.response.data.title + ' ' + result.response.data.error.message,
+        });
+      }
+    });
+  };
+}
+
+export function getSharedDirectories(data) {
+  return function (dispatch) {
+    dispatch({
+      type: SHARED_GET_DIRECTORIES,
+    });
+    axios({
+      method: 'get',
+      url: `${SERVER_URL}/sharedDirectory?path=${data.path}&name=${data.name}&token=${localStorage.getItem('token')}`,
+    })
+      .then((result) => {
+        if (result.response && result.response.status !== 200) {
+          dispatch({
+            type: SHARED_GET_DIRECTORIES_FAILURE,
+            response: result.response.data.title + ' ' + result.response.data.error.message,
+          });
+        }
+        dispatch({
+          type: SHARED_GET_DIRECTORIES_SUCCESS,
+          response: result.data.data,
+        });
+      }).catch((result) => {
+      if (result.response) {
+        dispatch({
+          type: SHARED_GET_DIRECTORIES_FAILURE,
           response: result.response.data.title + ' ' + result.response.data.error.message,
         });
       }

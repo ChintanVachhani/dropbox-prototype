@@ -123,7 +123,7 @@ router.get('/', function (req, res, next) {
 });
 
 // Get users
-router.get('/', function (req, res, next) {
+router.get('/search', function (req, res, next) {
   if (req.query.searchString.length > 0) {
     User.findAll({
       attributes: ['firstName', 'lastname', 'email'],

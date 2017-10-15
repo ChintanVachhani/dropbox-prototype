@@ -25,10 +25,25 @@ import {
   STAR_DIRECTORY_FAILURE,
   STAR_DIRECTORY_SUCCESS,
   STAR_DIRECTORY, GET_ACTIVITIES, GET_ACTIVITIES_SUCCESS, GET_ACTIVITIES_FAILURE, GET_STARRED_FILES, GET_STARRED_FILES_SUCCESS, GET_STARRED_FILES_FAILURE, GET_STARRED_DIRECTORIES,
-  GET_STARRED_DIRECTORIES_SUCCESS, GET_STARRED_DIRECTORIES_FAILURE,
+  GET_STARRED_DIRECTORIES_SUCCESS, GET_STARRED_DIRECTORIES_FAILURE, CREATE_SHARE_LINK_FAILURE, CREATE_SHARE_LINK_SUCCESS, CREATE_SHARE_LINK, USER_SEARCH, USER_SEARCH_SUCCESS,
+  USER_SEARCH_FAILURE, SHARE_FILE, SHARE_FILE_SUCCESS, SHARE_FILE_FAILURE, CREATE_SHARE_LINK_DIRECTORY, CREATE_SHARE_LINK_DIRECTORY_SUCCESS, CREATE_SHARE_LINK_DIRECTORY_FAILURE,
+  SHARE_DIRECTORY, SHARE_DIRECTORY_SUCCESS, SHARE_DIRECTORY_FAILURE, SHARED_LIST_FILES, SHARED_LIST_FILES_SUCCESS, SHARED_LIST_FILES_FAILURE, SHARED_LIST_DIRECTORIES,
+  SHARED_LIST_DIRECTORIES_SUCCESS, SHARED_LIST_DIRECTORIES_FAILURE, SHARED_GET_DIRECTORIES_FAILURE, SHARED_GET_DIRECTORIES_SUCCESS, SHARED_GET_DIRECTORIES,
+  SHARED_GET_FILES_FAILURE, SHARED_GET_FILES_SUCCESS, SHARED_GET_FILES,
 } from "../actions/content";
 
-const INITIAL_STATE = {files: null, directories: null, starredFiles: null, starredDirectories: null, activities: null, error: null, alert: null};
+const INITIAL_STATE = {
+  files: null,
+  directories: null,
+  starredFiles: null,
+  starredDirectories: null,
+  sharedFiles: null,
+  sharedDirectories: null,
+  activities: null,
+  users: null,
+  error: null,
+  alert: null,
+};
 
 export default function (state = INITIAL_STATE, action) {
   switch (action.type) {
@@ -44,6 +59,30 @@ export default function (state = INITIAL_STATE, action) {
       return {...state, directories: action.response, error: null, alert: null};
     case GET_DIRECTORIES_FAILURE:
       return {...state, directories: null, error: action.response, alert: null};
+    case SHARED_LIST_FILES:
+      return {...state, sharedFiles: null, error: null, alert: null};
+    case SHARED_LIST_FILES_SUCCESS:
+      return {...state, sharedFiles: action.response, error: null, alert: null};
+    case SHARED_LIST_FILES_FAILURE:
+      return {...state, sharedFiles: null, error: action.response, alert: null};
+    case SHARED_LIST_DIRECTORIES:
+      return {...state, sharedDirectories: null, error: null, alert: null};
+    case SHARED_LIST_DIRECTORIES_SUCCESS:
+      return {...state, sharedDirectories: action.response, error: null, alert: null};
+    case SHARED_LIST_DIRECTORIES_FAILURE:
+      return {...state, sharedDirectories: null, error: action.response, alert: null};
+    case SHARED_GET_FILES:
+      return {...state, sharedFiles: null, error: null, alert: null};
+    case SHARED_GET_FILES_SUCCESS:
+      return {...state, sharedFiles: action.response, error: null, alert: null};
+    case SHARED_GET_FILES_FAILURE:
+      return {...state, sharedFiles: null, error: action.response, alert: null};
+    case SHARED_GET_DIRECTORIES:
+      return {...state, sharedDirectories: null, error: null, alert: null};
+    case SHARED_GET_DIRECTORIES_SUCCESS:
+      return {...state, sharedDirectories: action.response, error: null, alert: null};
+    case SHARED_GET_DIRECTORIES_FAILURE:
+      return {...state, sharedDirectories: null, error: action.response, alert: null};
     case UPLOAD_FILE:
       return {...state, error: null, alert: null};
     case UPLOAD_FILE_SUCCESS:
@@ -102,6 +141,36 @@ export default function (state = INITIAL_STATE, action) {
       return {...state, starredDirectories: action.response, error: null, alert: null};
     case GET_STARRED_DIRECTORIES_FAILURE:
       return {...state, starredDirectories: null, error: action.response, alert: null};
+    case CREATE_SHARE_LINK:
+      return {...state, error: null, alert: null};
+    case CREATE_SHARE_LINK_SUCCESS:
+      return {...state, error: null, alert: action.response};
+    case CREATE_SHARE_LINK_FAILURE:
+      return {...state, error: action.response, alert: null};
+    case USER_SEARCH:
+      return {...state, users: null, error: null, alert: null};
+    case USER_SEARCH_SUCCESS:
+      return {...state, users: action.response, error: null, alert: null};
+    case USER_SEARCH_FAILURE:
+      return {...state, users: null, error: action.response, alert: null};
+    case SHARE_FILE:
+      return {...state, error: null, alert: null};
+    case SHARE_FILE_SUCCESS:
+      return {...state, error: null, alert: action.response};
+    case SHARE_FILE_FAILURE:
+      return {...state, error: action.response, alert: null};
+    case CREATE_SHARE_LINK_DIRECTORY:
+      return {...state, error: null, alert: null};
+    case CREATE_SHARE_LINK_DIRECTORY_SUCCESS:
+      return {...state, error: null, alert: action.response};
+    case CREATE_SHARE_LINK_DIRECTORY_FAILURE:
+      return {...state, error: action.response, alert: null};
+    case SHARE_DIRECTORY:
+      return {...state, error: null, alert: null};
+    case SHARE_DIRECTORY_SUCCESS:
+      return {...state, error: null, alert: action.response};
+    case SHARE_DIRECTORY_FAILURE:
+      return {...state, error: action.response, alert: null};
     default:
       return state;
   }

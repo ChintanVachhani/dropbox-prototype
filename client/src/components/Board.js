@@ -7,6 +7,7 @@ import Home from "./Home";
 import Content from "./Content";
 import Account from "./Account";
 import Options from "./Options";
+import Sharing from "./Sharing";
 
 class Board extends Component {
 
@@ -44,6 +45,7 @@ class Board extends Component {
               {this.props.board.toLoad === 'home' ? <Home history={this.props.history}/> : ''}
               {this.props.board.toLoad === 'files' ? <Content history={this.props.history}/> : ''}
               {this.props.board.toLoad === 'account' ? <Account history={this.props.history}/> : ''}
+              {this.props.board.toLoad === 'sharing' ? <Sharing history={this.props.history}/> : ''}
               <Options history={this.props.history}/>
             </div>
           </div>
