@@ -84,7 +84,7 @@ class SharedDirectory extends Component {
                             handleDownloadDirectory({
                               name: directory.name,
                               path: directory.path,
-                              userId: directory.owner,
+                              owner: directory.owner,
                             });
                           }}>Download</a>
                           {/*<a className="dropdown-item" href="" onClick={(e) => {

@@ -59,11 +59,11 @@ router.get('/', function (req, res, next) {
 });
 
 // Download a shared file
-router.get('/download', function (req, res, next) {
+router.post('/download', function (req, res, next) {
   let decoded = jwt.decode(req.query.token);
   SharedFile.find({where: {sharer: decoded.user.email, owner: req.body.owner, path: req.body.path, name: req.body.name}})
     .then(() => {
-      res.download(path.resolve(serverConfig.box.path, decoded.user.email, cryptr.decrypt(req.query.path), req.query.name), req.query.name, function (err) {
+      res.download(path.resolve(serverConfig.box.path, decoded.user.email, cryptr.decrypt(req.body.path), req.body.name), req.body.name, function (err) {
         if (err) {
           console.log("File download failed.");
         } else {
@@ -91,7 +91,7 @@ router.patch('/star', function (req, res, next) {
         });
       }
       sharedFile.updateAttributes({
-        starred: true,
+        starred: req.body.starred,
       });
       res.status(200).json({
         message: 'Shared file successfully starred.',

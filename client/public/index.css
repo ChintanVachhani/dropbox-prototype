@@ -12,7 +12,7 @@ html, body {
   margin-bottom: 25px;
 }
 
-.back-arrow{
+.back-arrow {
   margin-bottom: -17px;
   font-weight: bold;
   margin-left: -8px;
@@ -195,7 +195,7 @@ html, body {
   padding: 0;
 }
 
-.share-icon{
+.share-icon {
   margin-bottom: -12px;
 }
 
@@ -207,7 +207,7 @@ html, body {
   color: #3ba0f3;
 }
 
-.directory-div, .file-div, .activity-div{
+.directory-div, .file-div, .activity-div {
   padding: 0 20px 0 20px;
 }
 
@@ -219,12 +219,11 @@ html, body {
   display: none;
 }
 
-.new-folder-icon{
+.new-folder-icon {
   margin-bottom: 5px;
 }
 
-a:hover, a:visited, a:link, a:active
-{
+a:hover, a:visited, a:link, a:active {
   text-decoration: none;
 }
 
@@ -234,3 +233,7 @@ a:hover, a:visited, a:link, a:active
   transform: translate(-50%, -50%);
 }
 
+.pie-chart {
+  max-width: 300px;
+  max-height: 300px;
+}

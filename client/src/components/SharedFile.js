@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 import {connect} from "react-redux";
 import {
   starFile, downloadFile, deleteFile, getDirectories, getFiles, getStarredFiles, getStarredDirectories, getActivities, createShareLink,
-  shareFile, downloadSharedFile,
+  shareFile, downloadSharedFile, starSharedFile, downloadSharedDirectory, starSharedDirectory, listSharedFiles, listSharedDirectories, getSharedFiles, getSharedDirectories,
 } from "../actions/content";
-import {changePath} from "../actions/board";
+import {changePath, loadFiles} from "../actions/board";
 
 class File extends Component {
 
@@ -70,7 +70,7 @@ class File extends Component {
                             handleDownloadFile({
                               name: file.name,
                               path: file.path,
-                              userId: file.owner,
+                              owner: file.owner,
                             });
                           }}>Download</a>
                           {/*<a className="dropdown-item" href="" onClick={(e) => {
@@ -96,17 +96,17 @@ class File extends Component {
 
 function mapDispatchToProps(dispatch) {
   return {
-    handleDownloadFile: (data) => dispatch(downloadSharedFile(data)),
-    handleStarFile: (data) => dispatch(starFile(data)),
-    handleDeleteFile: (data) => dispatch(deleteFile(data)),
-    handleGetFiles: (path) => dispatch(getFiles(path)),
-    handleGetDirectories: (path) => dispatch(getDirectories(path)),
+    handleLoadFiles: (path) => {
+      dispatch(loadFiles(path))
+    },
+    handleDownloadDirectory: (data) => dispatch(downloadSharedDirectory(data)),
+    handleStarDirectory: (data) => dispatch(starSharedDirectory(data)),
+    /*handleDeleteDirectory: (data) => dispatch(deleteSharedDirectory(data)),*/
+    handleListFile: (data) => dispatch(listSharedFiles(data)),
+    handleListDirectories: (data) => dispatch(listSharedDirectories(data)),
+    handleGetFiles: (path) => dispatch(getSharedFiles(path)),
+    handleGetDirectories: (path) => dispatch(getSharedDirectories(path)),
     handleChangePath: (path) => dispatch(changePath(path)),
-    handleGetStarredFiles: () => dispatch(getStarredFiles()),
-    handleGetStarredDirectories: () => dispatch(getStarredDirectories()),
-    handleGetActivities: (count) => dispatch(getActivities(count)),
-    handleCreateShareLink: (data) => dispatch(createShareLink(data)),
-    handleFileShare: (data) => dispatch(shareFile(data)),
   };
 }
 

@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {connect} from "react-redux";
 import {
   createShareLinkDirectory, deleteDirectory, downloadDirectory, getActivities, getDirectories, getFiles, getStarredDirectories, getStarredFiles, shareDirectory,
-  starDirectory,
+  starDirectory, toggleAlert,
 } from "../actions/content";
 import {changePath, loadFiles} from "../actions/board";
 
@@ -48,9 +48,39 @@ class Directory extends Component {
   }
 
   render() {
-    const {key, directory, handleStarDirectory, handleDownloadDirectory, handleDeleteDirectory, handleCreateShareLinkDirectory, handleDirectoryShare} = this.props;
+    const {key, directory, handleStarDirectory, handleDownloadDirectory, handleDeleteDirectory, handleCreateShareLinkDirectory, handleDirectoryShare, handleAlert} = this.props;
     return (
       <div>
+        <div className="col text-center fixed-top alert-container">
+          {this.props.content.error ? <div className="alert alert-danger alert-dismissible fade show" role="alert" id="alert-div">
+            <div id="alert-text-div">
+              {this.props.content.error}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </div>
+            <div id="alert-close-btn-div">
+              <button type="button" className="close" data-dismiss="alert" aria-label="Close" id="alert-close-btn" onClick={(e) => {
+                e.preventDefault();
+                handleAlert();
+              }}>
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          </div> : ''}
+        </div>
+        <div className="col text-center fixed-top alert-container">
+          {this.props.content.alert ? <div className="alert alert-success alert-dismissible fade show" role="alert" id="alert-div">
+            <div id="alert-text-div">
+              {this.props.content.alert}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </div>
+            <div id="alert-close-btn-div">
+              <button type="button" className="close" data-dismiss="alert" aria-label="Close" id="alert-close-btn" onClick={(e) => {
+                e.preventDefault();
+                handleAlert();
+              }}>
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          </div> : ''}
+        </div>
         <div className="directory-div clearfix">
           <a href="" onClick={(e) => {
             e.preventDefault();
@@ -93,7 +123,7 @@ class Directory extends Component {
             <div className="modal-content">
              <div className="modal-header">
 
-             <input type="text" className="form-control" placeholder="To: ',' separated emails" autoFocus onChange={(e) => {
+             <input type="text" className="form-control" placeholder="To: comma separated emails" autoFocus onChange={(e) => {
                this.setState({
                  ...this.state,
                  sharers: e.target.value,
@@ -175,6 +205,7 @@ function mapDispatchToProps(dispatch) {
     handleLoadFiles: (path) => {
       dispatch(loadFiles(path))
     },
+    handleAlert: () => dispatch(toggleAlert()),
     handleDownloadDirectory: (data) => dispatch(downloadDirectory(data)),
     handleStarDirectory: (data) => dispatch(starDirectory(data)),
     handleDeleteDirectory: (data) => dispatch(deleteDirectory(data)),

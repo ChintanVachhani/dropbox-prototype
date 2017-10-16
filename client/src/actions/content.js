@@ -74,6 +74,7 @@ export const SHARED_STAR_DIRECTORY = 'SHARED_STAR_DIRECTORY';
 export const SHARED_STAR_DIRECTORY_SUCCESS = 'SHARED_STAR_DIRECTORY_SUCCESS';
 export const SHARED_STAR_DIRECTORY_FAILURE = 'SHARED_STAR_DIRECTORY_FAILURE';
 export const SHARED_DOWNLOAD_DIRECTORY = 'SHARED_DOWNLOAD_DIRECTORY';
+export const TOGGLE_ALERT = 'TOGGLE_ALERT';
 
 export function getFiles(path) {
   return function (dispatch) {
@@ -218,7 +219,7 @@ export function uploadFile(data) {
         }
         dispatch({
           type: UPLOAD_FILE_SUCCESS,
-          response: result.data.name + 'uploaded.',
+          response: result.data.name + ' uploaded.',
         });
       }).catch((result) => {
       if (result.response) {
@@ -265,7 +266,7 @@ export function starFile(data) {
         }
         dispatch({
           type: STAR_FILE_SUCCESS,
-          response: result.data.name + 'starred.',
+          response: result.data.name + ' star toggled.',
         });
       }).catch((result) => {
       if (result.response) {
@@ -297,7 +298,7 @@ export function deleteFile(data) {
         }
         dispatch({
           type: DELETE_FILE_SUCCESS,
-          response: result.data.name + 'deleted.',
+          response: result.data.name + ' deleted.',
         });
       }).catch((result) => {
       if (result.response) {
@@ -329,7 +330,7 @@ export function createDirectory(data) {
         }
         dispatch({
           type: CREATE_DIRECTORY_SUCCESS,
-          response: result.data.name + 'uploaded.',
+          response: result.data.name + ' created.',
         });
       }).catch((result) => {
       if (result.response) {
@@ -376,7 +377,7 @@ export function starDirectory(data) {
         }
         dispatch({
           type: STAR_DIRECTORY_SUCCESS,
-          response: result.data.name + 'starred.',
+          response: result.data.name + ' star toggled.',
         });
       }).catch((result) => {
       if (result.response) {
@@ -408,7 +409,7 @@ export function deleteDirectory(data) {
         }
         dispatch({
           type: DELETE_DIRECTORY_SUCCESS,
-          response: result.data.name + 'deleted.',
+          response: result.data.name + ' deleted.',
         });
       }).catch((result) => {
       if (result.response) {
@@ -567,7 +568,7 @@ export function shareFile(data) {
         }
         dispatch({
           type: SHARE_FILE_SUCCESS,
-          response: result.data.name + 'shared.',
+          response: result.data.name + ' shared.',
         });
       }).catch((result) => {
       if (result.response) {
@@ -599,7 +600,7 @@ export function shareDirectory(data) {
         }
         dispatch({
           type: SHARE_DIRECTORY_SUCCESS,
-          response: result.data.name + 'shared.',
+          response: result.data.name + ' shared.',
         });
       }).catch((result) => {
       if (result.response) {
@@ -612,13 +613,100 @@ export function shareDirectory(data) {
   };
 }
 
-export function downloadSharedDirectory(data) {
+export function downloadSharedDirectory(directory) {
+  return function (dispatch) {
+    dispatch({
+      type: SHARED_DOWNLOAD_DIRECTORY,
+      response: directory.name + ' downloaded.',
+    });
+    axios({
+      method: 'post',
+      url: `${SERVER_URL}/sharedDirectory/download?token=${localStorage.getItem('token')}`,
+      data: directory,
+    }).then((result) => {
+      fileDownload(result.data, directory.name + '.zip');
+    });
+  };
 }
 
-export function downloadSharedFile(data) {
+export function downloadSharedFile(file) {
+  return function (dispatch) {
+    dispatch({
+      type: SHARED_DOWNLOAD_FILE,
+      response: file.name + ' downloaded.',
+    });
+    axios({
+      method: 'post',
+      url: `${SERVER_URL}/sharedFile/download?token=${localStorage.getItem('token')}`,
+      data: file,
+    }).then((result) => {
+      fileDownload(result.data, file.name + '.zip');
+    });
+  };
+}
+
+export function starSharedFile(data) {
+  return function (dispatch) {
+    dispatch({
+      type: SHARED_STAR_FILE,
+    });
+    axios({
+      method: 'patch',
+      url: `${SERVER_URL}/sharedFile/star?token=${localStorage.getItem('token')}`,
+      data: data,
+    })
+      .then((result) => {
+        if (result.response && result.response.status !== 200) {
+          dispatch({
+            type: SHARED_STAR_FILE_FAILURE,
+            response: result.response.data.title + ' ' + result.response.data.error.message,
+          });
+        }
+        dispatch({
+          type: SHARED_STAR_FILE_SUCCESS,
+          response: result.data.name + ' star toggled.',
+        });
+      }).catch((result) => {
+      if (result.response) {
+        dispatch({
+          type: SHARED_STAR_FILE_FAILURE,
+          response: result.response.data.title + ' ' + result.response.data.error.message,
+        });
+      }
+    });
+  };
 }
 
 export function starSharedDirectory(data) {
+  return function (dispatch) {
+    dispatch({
+      type: SHARED_STAR_DIRECTORY,
+    });
+    axios({
+      method: 'patch',
+      url: `${SERVER_URL}/sharedDirectory/star?token=${localStorage.getItem('token')}`,
+      data: data,
+    })
+      .then((result) => {
+        if (result.response && result.response.status !== 200) {
+          dispatch({
+            type: SHARED_STAR_DIRECTORY_FAILURE,
+            response: result.response.data.title + ' ' + result.response.data.error.message,
+          });
+        }
+        dispatch({
+          type: SHARED_STAR_DIRECTORY_SUCCESS,
+          response: result.data.name + ' star toggled.',
+        });
+      }).catch((result) => {
+      if (result.response) {
+        dispatch({
+          type: SHARED_STAR_DIRECTORY_FAILURE,
+          response: result.response.data.title + ' ' + result.response.data.error.message,
+        });
+      }
+    });
+  };
 }
 
 export function deleteSharedDirectory(data) {
@@ -745,5 +833,11 @@ export function getSharedDirectories(data) {
         });
       }
     });
+  };
+}
+
+export function toggleAlert() {
+  return {
+    type: TOGGLE_ALERT
   };
 }

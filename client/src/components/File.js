@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {connect} from "react-redux";
 import {
   starFile, downloadFile, deleteFile, getDirectories, getFiles, getStarredFiles, getStarredDirectories, getActivities, createShareLink,
-  shareFile,
+  shareFile, toggleAlert,
 } from "../actions/content";
 import {changePath} from "../actions/board";
 
@@ -48,14 +48,45 @@ class File extends Component {
   }
 
   render() {
-    const {key, file, handleStarFile, handleDownloadFile, handleDeleteFile, handleCreateShareLink, handleFileShare} = this.props;
+    const {key, file, handleStarFile, handleDownloadFile, handleDeleteFile, handleCreateShareLink, handleFileShare, handleAlert} = this.props;
     console.log(this.state.id);
     return (
       <div>
+        <div className="col text-center fixed-top alert-container">
+          {this.props.content.error ? <div className="alert alert-danger alert-dismissible fade show" role="alert" id="alert-div">
+            <div id="alert-text-div">
+              {this.props.content.error}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </div>
+            <div id="alert-close-btn-div">
+              <button type="button" className="close" data-dismiss="alert" aria-label="Close" id="alert-close-btn" onClick={(e) => {
+                e.preventDefault();
+                handleAlert();
+              }}>
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          </div> : ''}
+        </div>
+        <div className="col text-center fixed-top alert-container">
+          {this.props.content.alert ? <div className="alert alert-success alert-dismissible fade show" role="alert" id="alert-div">
+            <div id="alert-text-div">
+              {this.props.content.alert}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </div>
+            <div id="alert-close-btn-div">
+              <button type="button" className="close" data-dismiss="alert" aria-label="Close" id="alert-close-btn" onClick={(e) => {
+                e.preventDefault();
+                handleAlert();
+              }}>
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          </div> : ''}
+        </div>
         <div className="file-div clearfix">
           <i
             className="material-icons file-icon">insert_drive_file</i><span>&nbsp;&nbsp;{file.name}&nbsp;&nbsp;</span><span
-          className="float-right">{file.shared ? <i className="material-icons share-icon text-secondary">supervisor_account</i> : ''}&nbsp;&nbsp;&nbsp;&nbsp;<a href=""><i className="material-icons star-icon text-primary" onClick={(e) => {
+          className="float-right">{file.shared ? <i className="material-icons share-icon text-secondary">supervisor_account</i> : ''}&nbsp;&nbsp;&nbsp;&nbsp;<a href=""><i
+          className="material-icons star-icon text-primary" onClick={(e) => {
           e.preventDefault();
           handleStarFile({
             id: file.id,
@@ -72,7 +103,7 @@ class File extends Component {
             <div className="modal-content">
              <div className="modal-header">
 
-             <input type="text" className="form-control" placeholder="To: ',' separated emails" autoFocus onChange={(e) => {
+             <input type="text" className="form-control" placeholder="To: comma separated emails" autoFocus onChange={(e) => {
                this.setState({
                  ...this.state,
                  sharers: e.target.value,
@@ -151,6 +182,7 @@ class File extends Component {
 
 function mapDispatchToProps(dispatch) {
   return {
+    handleAlert: () => dispatch(toggleAlert()),
     handleDownloadFile: (data) => dispatch(downloadFile(data)),
     handleStarFile: (data) => dispatch(starFile(data)),
     handleDeleteFile: (data) => dispatch(deleteFile(data)),

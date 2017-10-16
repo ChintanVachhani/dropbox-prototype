@@ -18,36 +18,35 @@ router.use('/', function (req, res, next) {
 
 router.get('/', function (req, res, next) {
   let decoded = jwt.decode(req.query.token);
-  if (req.query.count) {
-    Activity.findAll({where: {email: decoded.user.email}, limit: Number(req.query.count), order: [['createdAt', 'DESC']]})
-      .then((activities) => {
-        res.status(200).json({
-          message: 'Activities retrieved successfully.',
-          data: activities,
-        });
-      })
-      .catch(() => {
-        res.status(500).json({
-          title: 'Cannot retrieve activities.',
-          error: {message: 'Internal server error.'},
-        });
+  Activity.findAll({where: {email: decoded.user.email}, limit: Number(req.query.count), order: [['createdAt', 'DESC']]})
+    .then((activities) => {
+      res.status(200).json({
+        message: 'Activities retrieved successfully.',
+        data: activities,
       });
-  } else {
-    Activity.findAll({where: {email: decoded.user.email}})
-      .then((activities) => {
-        res.status(200).json({
-          message: 'Activities retrieved successfully.',
-          data: activities,
-        });
-      })
-      .catch(() => {
-        res.status(500).json({
-          title: 'Cannot retrieve activities.',
-          error: {message: 'Internal server error.'},
-        });
+    })
+    .catch(() => {
+      res.status(500).json({
+        title: 'Cannot retrieve activities.',
+        error: {message: 'Internal server error.'},
       });
-  }
-
+    });
 });
 
+router.get('/all', function (req, res, next) {
+  let decoded = jwt.decode(req.query.token);
+  Activity.findAll({where: {email: decoded.user.email}})
+    .then((activities) => {
+      res.status(200).json({
+        message: 'Activities retrieved successfully.',
+        data: activities,
+      });
+    })
+    .catch(() => {
+      res.status(500).json({
+        title: 'Cannot retrieve activities.',
+        error: {message: 'Internal server error.'},
+      });
+    });
+});
 module.exports = router;

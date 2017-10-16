@@ -8,6 +8,9 @@ export const GET_USER_ACCOUNT_FAILURE = 'GET_USER_ACCOUNT_FAILURE';
 export const UPDATE_USER_ACCOUNT = 'UPDATE_USER_ACCOUNT';
 export const UPDATE_USER_ACCOUNT_SUCCESS = 'UPDATE_USER_ACCOUNT_SUCCESS';
 export const UPDATE_USER_ACCOUNT_FAILURE = 'UPDATE_USER_ACCOUNT_FAILURE';
+export const GET_ACTIVITIES = 'GET_ACTIVITIES';
+export const GET_ACTIVITIES_SUCCESS = 'GET_ACTIVITIES_SUCCESS';
+export const GET_ACTIVITIES_FAILURE = 'GET_ACTIVITIES_FAILURE';
 
 export function getAccount() {
   return function (dispatch) {
@@ -71,3 +74,36 @@ export function updateAccount(data) {
     });
   };
 }
+
+export function getActivities() {
+  return function (dispatch) {
+    dispatch({
+      type: GET_ACTIVITIES,
+    });
+    axios({
+      method: 'get',
+      url: `${SERVER_URL}/activity/all?token=${localStorage.getItem('token')}`,
+    })
+      .then((result) => {
+        if (result.response && result.response.status !== 200) {
+          dispatch({
+            type: GET_ACTIVITIES_FAILURE,
+            response: result.response.data.title + ' ' + result.response.data.error.message,
+          });
+        }
+        dispatch({
+          type: GET_ACTIVITIES_SUCCESS,
+          response: result.data.data,
+        });
+      }).catch((result) => {
+      if (result.response) {
+        dispatch({
+          type: GET_ACTIVITIES_FAILURE,
+          response: result.response.data.title + ' ' + result.response.data.error.message,
+        });
+      }
+    });
+  };
+}
+
+

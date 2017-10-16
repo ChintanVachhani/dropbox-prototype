@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from "react-redux";
-import {getAccount, updateAccount} from "../actions/account";
+import {getAccount, updateAccount, getActivities} from "../actions/account";
+import PieChart from 'react-simple-pie-chart';
 
 class Account extends Component {
 
@@ -19,6 +20,13 @@ class Account extends Component {
     },
     isCompleted: false,
     editing: false,
+    chart: {
+      deleted: '',
+      uploaded: '',
+      downloaded: '',
+      created: '',
+      starred: '',
+    },
   };
 
   componentWillMount() {
@@ -37,11 +45,19 @@ class Account extends Component {
       },
       isCompleted: false,
       editing: false,
+      chart: {
+        deleted: '',
+        uploaded: '',
+        downloaded: '',
+        created: '',
+        starred: '',
+      },
     });
     if (this.props.user.status !== 'authenticated' || !this.props.user.userId || this.props.user.error) {
       this.props.history.push('/login');
     } else {
       this.props.handleGetAccount();
+      this.props.handleGetActivities();
     }
   }
 
@@ -66,6 +82,34 @@ class Account extends Component {
           city: this.props.account.user.city,
           zipcode: this.props.account.user.zipcode,
           interests: this.props.account.user.interests,
+        },
+      });
+    }
+    if (this.props.account.activities) {
+      let deleted = 0;
+      let uploaded = 0;
+      let downloaded = 0;
+      let created = 0;
+      let starred = 0;
+      this.props.account.activities.map((activity) => {
+        activity.log.split(' ')[0] === 'Toggled' ? starred++ : (
+          activity.log.split(' ')[0] === 'Deleted' ? deleted++ : (
+            activity.log.split(' ')[0] === 'Downloaded' ? downloaded++ : (
+              activity.log.split(' ')[0] === 'Uploaded' ? uploaded++ : (
+                activity.log.split(' ')[0] === 'Created' ? created++ : ''
+              )
+            )
+          ));
+      });
+
+      this.setState({
+        ...this.state,
+        chart: {
+          deleted: deleted,
+          uploaded: uploaded,
+          downloaded: downloaded,
+          created: created,
+          starred: starred,
         },
       });
     }
@@ -211,7 +255,40 @@ class Account extends Component {
               <button type="submit" className="btn btn-primary btn-sm" disabled={!this.state.editing}>Update</button>
             </form>
           </div>
-          <div className="tab-pane fade" id="life-cycle" role="tabpanel" aria-labelledby="life-cycle-tab"></div>
+          <div className="tab-pane fade" id="life-cycle" role="tabpanel" aria-labelledby="life-cycle-tab">
+            <div className="mt-5">
+            <span className="badge badge-info">Starred</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span className="badge badge-danger">Deleted</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span className="badge badge-warning">Downloaded</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span className="badge badge-success">Uploaded</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            {/*<span className="badge badge-primary">Primary</span>*/}
+            <span className="badge badge-secondary">Created</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          </div>
+            <PieChart
+              slices={[
+                {
+                  color: '#dc3545',
+                  value: Number(this.state.chart.deleted),
+                },
+                {
+                  color: '#28a745',
+                  value: Number(this.state.chart.uploaded),
+                },
+                {
+                  color: '#17a2b8',
+                  value: Number(this.state.chart.starred),
+                },
+                {
+                  color: '#ffc107',
+                  value: Number(this.state.chart.downloaded),
+                },
+                {
+                  color: '#868e96',
+                  value: Number(this.state.chart.created),
+                },
+              ]}
+            />
+          </div>
         </div>
       </div>
     );
@@ -222,6 +299,7 @@ function mapDispatchToProps(dispatch) {
   return {
     handleGetAccount: () => dispatch(getAccount()),
     handleAccountUpdate: (data) => dispatch(updateAccount(data)),
+    handleGetActivities: () => dispatch(getActivities()),
   };
 }
 

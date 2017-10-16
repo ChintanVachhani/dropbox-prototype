@@ -66,7 +66,7 @@ class Navigation extends Component {
             }}>Files</a>
           </li>
           <li className="nav-item">
-            <a className={`nav-link ${this.props.board.toLoad === 'files' ? 'active' : 'disabled'}`} href="" onClick={(e) => {
+            <a className={`nav-link ${this.props.board.toLoad === 'sharing' ? 'active' : 'disabled'}`} href="" onClick={(e) => {
               e.preventDefault();
               handleLoadSharing();
             }}>Sharing</a>

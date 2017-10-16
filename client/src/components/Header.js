@@ -8,15 +8,24 @@ class Header extends Component {
   state = {
     initials: '',
     name: '',
+    error: '',
+    alert: '',
   };
 
   componentWillMount() {
+    this.setState({
+      initials: '',
+      name: '',
+      error: '',
+      alert: '',
+    });
     if (this.props.user.status !== 'authenticated' || !this.props.user.userId || this.props.user.error) {
       this.props.history.push('/login');
     } else {
       let firstName = this.props.user.firstName;
       let lastName = this.props.user.lastName;
       this.setState({
+        ...this.state,
         initials: firstName.toString().substring(0, 1).toUpperCase() + lastName.toString().substring(0, 1).toUpperCase(),
         name: firstName + ' ' + lastName,
       });
@@ -34,6 +43,12 @@ class Header extends Component {
       this.props.history.push('/login');
     } else if (this.props.board !== prevProps.board) {
       this.props.history.push('/');
+    } else if (this.props.content.alert !== prevProps.content.alert || this.props.content.error !== prevProps.content.error) {
+      this.setState({
+        ...this.state,
+        error: this.props.content.error,
+        alert: this.props.content.alert,
+      });
     }
   }
 
@@ -93,6 +108,7 @@ function mapStateToProps(state) {
   return {
     user: state.user,
     board: state.board,
+    content: state.content,
   };
 }
 

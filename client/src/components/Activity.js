@@ -27,13 +27,14 @@ class Activity extends Component {
 
   render() {
     const {key, activity} = this.props;
-    const colorClass = activity.log.split(' ')[0] === 'Toggled' ? 'text text-primary' : (
+    const colorClass = activity.log.split(' ')[0] === 'Toggled' ? 'text text-info' : (
       activity.log.split(' ')[0] === 'Deleted' ? 'text text-danger' : (
-        activity.log.split(' ')[0] === 'Uploaded' ? 'text text-warning' : (
-          activity.log.split(' ')[0] === 'Downloaded' || activity.log.split(' ')[0] === 'Created'? 'text text-success' : 'text text-secondary'
+        activity.log.split(' ')[0] === 'Downloaded' ? 'text text-warning' : (
+          activity.log.split(' ')[0] === 'Uploaded' ? 'text text-success' : (
+            activity.log.split(' ')[0] === 'Created' ? 'text text-secondary' : ''
+          )
         )
-      )
-    );
+      ));
 
     return (
       <div>
