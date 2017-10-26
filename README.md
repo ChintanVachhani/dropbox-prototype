@@ -1,6 +1,6 @@
 # dropbox-prototype
 
-It is a simple Dropbox replica. It uses NodeJS, ExpressJS, ReactJS & MySQL.
+An individual effort to create a simple Dropbox replica. It uses NodeJS, ExpressJS, ReactJS & MySQL.
 
 ## Git Repository
 
