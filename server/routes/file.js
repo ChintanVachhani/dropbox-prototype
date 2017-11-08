@@ -83,7 +83,34 @@ router.get('/', function (req, res, next) {
 
 // Get all starred files
 router.get('/starred', function (req, res, next) {
-  let decoded = jwt.decode(req.query.token);
+
+  kafka.make_request('fileTopic', {name: 'getAllStaredFiles', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*let decoded = jwt.decode(req.query.token);
   File.findAll({where: {owner: decoded.user.email, starred: true}})
     .then((files) => {
       res.status(200).json({
@@ -96,12 +123,39 @@ router.get('/starred', function (req, res, next) {
         title: 'Cannot retrieve files.',
         error: {message: 'Internal server error.'},
       });
-    });
+    });*/
 });
 
 // Create a shareable link
 router.patch('/link', function (req, res, next) {
-  let decoded = jwt.decode(req.query.token);
+
+  kafka.make_request('fileTopic', {name: 'createShareableLink', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*let decoded = jwt.decode(req.query.token);
   File.find({where: {id: req.body.id}})
     .then((file) => {
       if (file.owner != decoded.user.email) {
@@ -123,7 +177,7 @@ router.patch('/link', function (req, res, next) {
         title: 'Cannot create shareable link.',
         error: {message: 'File not found.'},
       });
-    });
+    });*/
 });
 
 // Download a file
@@ -237,7 +291,34 @@ router.post('/', function (req, res, next) {
 
 // Star a file
 router.patch('/star', function (req, res, next) {
-  let decoded = jwt.decode(req.query.token);
+
+  kafka.make_request('fileTopic', {name: 'starFile', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*let decoded = jwt.decode(req.query.token);
   File.find({where: {id: req.body.id}})
     .then((file) => {
       if (file.owner != decoded.user.email) {
@@ -276,12 +357,39 @@ router.patch('/star', function (req, res, next) {
         title: 'Cannot star file.',
         error: {message: 'File not found.'},
       });
-    });
+    });*/
 });
 
 // Share a file
 router.patch('/share', function (req, res, next) {
-  let decoded = jwt.decode(req.query.token);
+
+  kafka.make_request('fileTopic', {name: 'shareFile', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*let decoded = jwt.decode(req.query.token);
   File.find({where: {id: req.body.id}})
     .then((file) => {
       if (file.owner != decoded.user.email) {
@@ -324,13 +432,39 @@ router.patch('/share', function (req, res, next) {
         title: 'Cannot share file.',
         error: {message: 'File not found.'},
       });
-    });
-})
-;
+    });*/
+});
 
 // Rename a file
 router.patch('/', function (req, res, next) {
-  let decoded = jwt.decode(req.query.token);
+
+  kafka.make_request('fileTopic', {name: 'renameFile', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*let decoded = jwt.decode(req.query.token);
   File.find({where: {id: req.body.id}})
     .then((file) => {
       if (file.owner != decoded.user.email) {
@@ -379,12 +513,39 @@ router.patch('/', function (req, res, next) {
         title: 'Cannot rename file.',
         error: {message: 'File not found.'},
       });
-    });
+    });*/
 });
 
 // Delete a file
 router.delete('/', function (req, res, next) {
-  let decoded = jwt.decode(req.query.token);
+
+  kafka.make_request('fileTopic', {name: 'deleteFile', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*let decoded = jwt.decode(req.query.token);
   File.find({where: {id: req.body.id}})
     .then((file) => {
       if (file.owner != decoded.user.email) {
@@ -448,7 +609,7 @@ router.delete('/', function (req, res, next) {
         title: 'Cannot delete file.',
         error: {message: 'File not found.'},
       });
-    });
+    });*/
 });
 
 module.exports = router;
