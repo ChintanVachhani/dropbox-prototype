@@ -6,3 +6,4 @@ dump.rdb
 /server/box/
 .editorconfig
 /client/node_modules/
+server/kafka-server/node_modules/
