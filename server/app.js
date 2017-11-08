@@ -2,12 +2,14 @@ let express = require('express');
 let path = require('path');
 let cookieParser = require('cookie-parser');
 let bodyParser = require('body-parser');
+let passport = require('passport');
 let cors = require('cors');
 
 // Initialize the Express App
 let app = express();
 
 // Import required modules
+require('./routes/passport')(passport);
 let serverConfig = require('./config');
 let userRoutes = require('./routes/user');
 let directoryRoutes = require('./routes/directory');

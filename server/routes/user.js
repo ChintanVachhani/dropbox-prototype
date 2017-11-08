@@ -8,10 +8,39 @@ let UserAccount = require('../models/userAccount');
 let bcrypt = require('bcryptjs');
 let jwt = require('jsonwebtoken');
 let fs = require('fs-extra');
+let passport = require('passport');
+let kafka = require('./kafka/client');
 
 // User Sign up
 router.post('/signup', function (req, res, next) {
-  let user = {
+
+  kafka.make_request('userTopic', {name: 'signup', body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*let user = {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
@@ -64,12 +93,20 @@ router.post('/signup', function (req, res, next) {
         title: 'Signing up failed.',
         error: {message: 'Invalid Data.'},
       });
-    });
+    });*/
 });
 
 // User Sign in
 router.post('/signin', function (req, res, next) {
-  User.find({where: {email: req.body.email}})
+  passport.authenticate('signin', function (err, response) {
+    if (err) {
+      return res.status(401).json(response);
+    } else if (!response.userId) {
+      return res.status(401).json(response);
+    }
+    res.status(200).json(response);
+  })(req, res, next);
+  /*User.find({where: {email: req.body.email}})
     .then((user) => {
       if (!bcrypt.compareSync(req.body.password, user.password)) {
         return res.status(401).json({
@@ -89,7 +126,7 @@ router.post('/signin', function (req, res, next) {
         title: 'Signing in failed.',
         error: {message: 'Invalid credentials.'},
       });
-    });
+    });*/
 });
 
 // Session Authentication
@@ -107,7 +144,34 @@ router.use('/', function (req, res, next) {
 
 // Get user
 router.get('/', function (req, res, next) {
-  User.find({attributes: ['firstName', 'lastName', 'email'], where: {email: req.query.userId}})
+
+  kafka.make_request('userTopic', {name: 'getUser', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*User.find({attributes: ['firstName', 'lastName', 'email'], where: {email: req.query.userId}})
     .then((user) => {
       res.status(200).json({
         message: 'Successfully retrieved user information.',
@@ -119,12 +183,39 @@ router.get('/', function (req, res, next) {
         title: 'Cannot retrieve user information.',
         error: {message: 'User not found.'},
       });
-    });
+    });*/
 });
 
 // Get users
 router.get('/search', function (req, res, next) {
-  if (req.query.searchString.length > 0) {
+
+  kafka.make_request('userTopic', {name: 'getUsers', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*if (req.query.searchString.length > 0) {
     User.findAll({
       attributes: ['firstName', 'lastname', 'email'],
       where: {
@@ -152,12 +243,39 @@ router.get('/search', function (req, res, next) {
       message: 'No search string.',
       data: [],
     });
-  }
+  }*/
 });
 
 // Get user account
 router.get('/account', function (req, res, next) {
-  let decoded = jwt.decode(req.query.token);
+
+  kafka.make_request('userTopic', {name: 'getUserAccount', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*let decoded = jwt.decode(req.query.token);
   if (req.query.userId != decoded.user.email) {
     return res.status(401).json({
       title: 'Not Authenticated.',
@@ -176,12 +294,39 @@ router.get('/account', function (req, res, next) {
         title: 'Cannot update user account.',
         error: {message: 'User account not found.'},
       });
-    });
+    });*/
 });
 
 // Update user account
 router.patch('/account', function (req, res, next) {
-  let decoded = jwt.decode(req.query.token);
+
+  kafka.make_request('userTopic', {name: 'updateUserAccount', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*let decoded = jwt.decode(req.query.token);
   if (req.body.email != decoded.user.email) {
     return res.status(401).json({
       title: 'Not Authenticated.',
@@ -220,7 +365,7 @@ router.patch('/account', function (req, res, next) {
             error: {message: 'User not found.'},
           });
         });
-    });
+    });*/
 });
 
 module.exports = router;

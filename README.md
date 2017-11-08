@@ -5,7 +5,7 @@ An individual effort to create a simple Dropbox replica. It uses NodeJS, Express
 ## Git Repository
 
 ```
-  git clone https://github.com/ChintanVachhani/dropbox-prototype.git 
+  git clone https://github.com/ChintanVachhani/dropbox-prototype.git
 ```
 
 **Note : Please make sure your MySQL is running and has a database named 'dropbox-prototype'.** Also `npm3` is required to install dependencies properly.
@@ -18,10 +18,10 @@ An individual effort to create a simple Dropbox replica. It uses NodeJS, Express
    npm install
    npm run start
    ```
-   - **Note :** 
+   - **Note :**
       - Server started @ 'localhost:8000'.
-      - Make sure 'mysql' is running on your machine.
-      
+      - Make sure 'mysql' & 'mongoDB' are running on your machine.
+
 ####2. Run the Client - localhost:3000
    ```
    cd client

@@ -1,0 +1,18 @@
+{
+  "name": "dropbox-prototype-kafka-server",
+  "version": "1.0.0",
+  "description": "A simple Dropbox replica.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Chintan Vachhani <chintan.vachhani10@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "kafka-node": "^2.2.3",
+    "passport": "^0.4.0",
+    "mongodb": "^2.2.31",
+    "passport-local": "^1.0.0"
+  }
+}

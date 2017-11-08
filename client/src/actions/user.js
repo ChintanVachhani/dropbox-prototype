@@ -27,6 +27,7 @@ export function signin(data) {
       data: data,
     })
       .then((result) => {
+        console.log(result);
         if (result.response && result.response.status !== 200) {
           dispatch({
             type: SIGNIN_FAILURE,

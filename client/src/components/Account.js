@@ -62,6 +62,23 @@ class Account extends Component {
   }
 
   componentWillReceiveProps(nextProps, nextState) {
+    if (this.props.account.user && !this.state.editing) {
+      this.setState({
+        ...this.state,
+        user: {
+          email: this.props.account.user.email,
+          firstName: this.props.account.user.firstName,
+          lastName: this.props.account.user.lastName,
+          work: this.props.account.user.work,
+          education: this.props.account.user.education,
+          address: this.props.account.user.address,
+          country: this.props.account.user.country,
+          city: this.props.account.user.city,
+          zipcode: this.props.account.user.zipcode,
+          interests: this.props.account.user.interests,
+        },
+      });
+    }
     if (nextProps.user.status !== 'authenticated' || !nextProps.user.userId || nextProps.user.error) {
       this.props.history.push('/login');
     }

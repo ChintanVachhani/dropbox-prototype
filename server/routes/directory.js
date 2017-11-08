@@ -12,6 +12,7 @@ let Activity = require('../models/activity');
 let File = require('../models/file');
 let SharedFile = require('../models/sharedFile');
 let zipFolder = require('zip-folder');
+let kafka = require('./kafka/client');
 
 // Get a directory from link
 router.get('/link/:path/:directoryName', function (req, res, next) {
@@ -102,7 +103,34 @@ router.get('/download', function (req, res, next) {
 
 // Get all directories
 router.get('/', function (req, res, next) {
-  let decoded = jwt.decode(req.query.token);
+
+  kafka.make_request('directoryTopic', {name: 'getAllDirectories', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*let decoded = jwt.decode(req.query.token);
   Directory.findAll({where: {owner: decoded.user.email, path: req.query.path}})
     .then((directories) => {
       res.status(200).json({
@@ -115,7 +143,7 @@ router.get('/', function (req, res, next) {
         title: 'Cannot retrieve directories.',
         error: {message: 'Internal server error.'},
       });
-    });
+    });*/
 });
 
 // Get all starred directories
