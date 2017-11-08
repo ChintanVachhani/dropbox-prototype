@@ -7,6 +7,7 @@ let Cryptr = require('cryptr'), cryptr = new Cryptr('secret');
 let jwt = require('jsonwebtoken');
 let fs = require('fs-extra');
 let SharedFile = require('../models/sharedFile');
+let kafka = require('./kafka/client');
 
 // Session Authentication
 router.use('/', function (req, res, next) {
@@ -23,7 +24,34 @@ router.use('/', function (req, res, next) {
 
 // List all shared files
 router.get('/list', function (req, res, next) {
-  let decoded = jwt.decode(req.query.token);
+
+  kafka.make_request('sharedFileTopic', {name: 'listAllSharedFiles', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*let decoded = jwt.decode(req.query.token);
   SharedFile.findAll({where: {sharer: decoded.user.email, show: true}})
     .then((sharedFiles) => {
       res.status(200).json({
@@ -36,12 +64,39 @@ router.get('/list', function (req, res, next) {
         title: 'Cannot retrieve shared files list.',
         error: {message: 'Internal server error.'},
       });
-    });
+    });*/
 });
 
 // Get all shared files
 router.get('/', function (req, res, next) {
-  let decoded = jwt.decode(req.query.token);
+
+  kafka.make_request('sharedFileTopic', {name: 'getAllSharedFiles', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*let decoded = jwt.decode(req.query.token);
   console.log(cryptr.encrypt(path.join(cryptr.decrypt(req.query.path), req.query.name)));
   SharedFile.findAll({where: {sharer: decoded.user.email, path: cryptr.encrypt(path.join(cryptr.decrypt(req.query.path), req.query.name))}})
     .then((sharedFiles) => {
@@ -55,7 +110,7 @@ router.get('/', function (req, res, next) {
         title: 'Cannot retrieve shared files.',
         error: {message: 'Internal server error.'},
       });
-    });
+    });*/
 });
 
 // Download a shared file
@@ -81,7 +136,34 @@ router.post('/download', function (req, res, next) {
 
 // Star a shared file
 router.patch('/star', function (req, res, next) {
-  let decoded = jwt.decode(req.query.token);
+
+  kafka.make_request('sharedFileTopic', {name: 'starSharedFile', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*let decoded = jwt.decode(req.query.token);
   SharedFile.find({where: {id: req.body.id}})
     .then((sharedFile) => {
       if (sharedFile.sharer != decoded.user.email) {
@@ -103,7 +185,7 @@ router.patch('/star', function (req, res, next) {
         title: 'Cannot star shared file.',
         error: {message: 'Shared file not found.'},
       });
-    });
+    });*/
 });
 
 module.exports = router;

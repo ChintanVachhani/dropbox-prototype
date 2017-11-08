@@ -148,7 +148,34 @@ router.get('/', function (req, res, next) {
 
 // Get all starred directories
 router.get('/starred', function (req, res, next) {
-  let decoded = jwt.decode(req.query.token);
+
+  kafka.make_request('directoryTopic', {name: 'getAllStaredDirectories', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*let decoded = jwt.decode(req.query.token);
   Directory.findAll({where: {owner: decoded.user.email, starred: true}})
     .then((directories) => {
       res.status(200).json({
@@ -161,12 +188,39 @@ router.get('/starred', function (req, res, next) {
         title: 'Cannot retrieve directories.',
         error: {message: 'Internal server error.'},
       });
-    });
+    });*/
 });
 
 // Create a shareable link
 router.patch('/link', function (req, res, next) {
-  let decoded = jwt.decode(req.query.token);
+
+  kafka.make_request('directoryTopic', {name: 'createShareableLink', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*let decoded = jwt.decode(req.query.token);
   Directory.find({where: {id: req.body.id}})
     .then((directory) => {
       if (directory.owner != decoded.user.email) {
@@ -188,12 +242,39 @@ router.patch('/link', function (req, res, next) {
         title: 'Cannot create shareable link.',
         error: {message: 'Directory not found.'},
       });
-    });
+    });*/
 });
 
 // Create a directory
 router.put('/', function (req, res, next) {
-  let decoded = jwt.decode(req.query.token);
+
+  kafka.make_request('directoryTopic', {name: 'createDirectory', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*let decoded = jwt.decode(req.query.token);
   if (req.body.owner != decoded.user.email) {
     return res.status(401).json({
       title: 'Not Authenticated.',
@@ -259,12 +340,39 @@ router.put('/', function (req, res, next) {
           error: {message: 'Invalid Data.'},
         });
       });
-  }
+  }*/
 });
 
 // Star a directory
 router.patch('/star', function (req, res, next) {
-  let decoded = jwt.decode(req.query.token);
+
+  kafka.make_request('directoryTopic', {name: 'starDirectory', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*let decoded = jwt.decode(req.query.token);
   console.log(req.body);
   Directory.find({where: {id: req.body.id}})
     .then((directory) => {
@@ -304,12 +412,39 @@ router.patch('/star', function (req, res, next) {
         title: 'Cannot star directory.',
         error: {message: 'Directory not found.'},
       });
-    });
+    });*/
 });
 
 // Share a directory
 router.patch('/share', function (req, res, next) {
-  let decoded = jwt.decode(req.query.token);
+
+  kafka.make_request('directoryTopic', {name: 'shareDirectory', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*let decoded = jwt.decode(req.query.token);
   let successful = true;
   let markAllDirectoriesShared = function (directoryPath, directoryName, directoryId, toShow) {
     Directory.find({where: {id: directoryId}})
@@ -453,12 +588,39 @@ router.patch('/share', function (req, res, next) {
       title: 'Cannot share directory.',
       error: {message: 'Internal server error.'},
     });
-  }
+  }*/
 });
 
 // Rename a directory
 router.patch('/', function (req, res, next) {
-  let decoded = jwt.decode(req.query.token);
+
+  kafka.make_request('directoryTopic', {name: 'renameDirectory', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*let decoded = jwt.decode(req.query.token);
 
   Directory.find({where: {id: req.body.id}})
     .then((directory) => {
@@ -508,12 +670,39 @@ router.patch('/', function (req, res, next) {
         title: 'Cannot rename directory.',
         error: {message: 'Directory not found.'},
       });
-    });
+    });*/
 });
 
 // Delete a directory
 router.delete('/', function (req, res, next) {
-  let decoded = jwt.decode(req.query.token);
+
+  kafka.make_request('directoryTopic', {name: 'deleteDirectory', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        res.status(200).json(response);
+        break;
+      case 201:
+        res.status(201).json(response);
+        break;
+      case 400:
+        res.status(400).json(response);
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+      case 404:
+        res.status(404).json(response);
+        break;
+      case 500:
+        res.status(500).json(response);
+        break;
+    }
+  });
+
+  /*let decoded = jwt.decode(req.query.token);
   Directory.find({where: {id: req.body.id}})
     .then((directory) => {
       if (directory.owner != decoded.user.email) {
@@ -576,7 +765,7 @@ router.delete('/', function (req, res, next) {
         title: 'Cannot delete directory.',
         error: {message: 'Directory not found.'},
       });
-    });
+    });*/
 });
 
 module.exports = router;

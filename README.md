@@ -20,7 +20,7 @@ An individual effort to create a simple Dropbox replica. It uses NodeJS, Express
    ```
    - **Note :**
       - Server started @ 'localhost:8000'.
-      - Make sure 'mysql' & 'mongoDB' are running on your machine.
+      - Make sure 'mysql' are running on your machine.
 
 ####2. Run the Client - localhost:3000
    ```
