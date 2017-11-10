@@ -14,13 +14,33 @@ let kafka = require('./kafka/client');
 
 // Get a file from link
 router.get('/link/:path/:fileName', function (req, res, next) {
-  res.download(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path), req.params.fileName), req.params.fileName, function (err) {
+
+  kafka.make_request('fileTopic', {name: 'getFileByLink', params: req.params, query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    fs.writeFile(path.resolve(serverConfig.box.path, 'tmp', response.fileName), response.buffer, 'base64', function (err) {
+      if (err) return console.error(err);
+      console.log("Wrote file " + path.resolve(serverConfig.box.path, 'tmp', response.fileName));
+      res.download(path.resolve(serverConfig.box.path, 'tmp', response.fileName), response.fileName, function (err) {
+        if (err) {
+          console.log("File download failed.");
+        } else {
+          console.log("File downloaded successfully.");
+          fs.remove(path.resolve(serverConfig.box.path, 'tmp', response.fileName));
+        }
+      });
+    });
+
+  });
+
+  /*res.download(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path), req.params.fileName), req.params.fileName, function (err) {
     if (err) {
       console.log("File download failed.");
     } else {
       console.log("File downloaded successfully.");
     }
-  });
+  });*/
 });
 
 // Session Authentication
@@ -182,38 +202,67 @@ router.patch('/link', function (req, res, next) {
 
 // Download a file
 router.get('/download', function (req, res, next) {
+
   let decoded = jwt.decode(req.query.token);
+
   if (req.query.userId != decoded.user.email) {
     return res.status(401).json({
       title: 'Not Authenticated.',
       error: {message: 'Users do not match.'},
     });
   }
-  console.log(path.resolve(serverConfig.box.path, decoded.user.email, req.query.path, req.query.name));
-  res.download(path.resolve(serverConfig.box.path, decoded.user.email, req.query.path, req.query.name), req.query.name, function (err) {
-    if (err) {
-      console.log("File download failed.");
-    } else {
-      console.log("File downloaded successfully.");
-      let activity = {
-        email: decoded.user.email,
-        log: "Downloaded " + req.query.name,
-      };
-      Activity.create(activity)
-        .then((activity) => {
-          console.log({
-            message: 'Activity successfully logged.',
-            log: activity.log,
-          });
-        })
-        .catch(() => {
-          console.log({
-            title: 'Activity cannot be logged.',
-            error: {message: 'Invalid Data.'},
-          });
-        });
-    }
+
+  kafka.make_request('fileTopic', {name: 'downloadFile', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    fs.writeFile(path.resolve(serverConfig.box.path, 'tmp', response.fileName), response.buffer, 'base64', function (err) {
+      if (err) return console.error(err);
+      console.log("Wrote file " + path.resolve(serverConfig.box.path, 'tmp', response.fileName));
+      res.download(path.resolve(serverConfig.box.path, 'tmp', response.fileName), response.fileName, function (err) {
+        if (err) {
+          console.log("File download failed.");
+        } else {
+          console.log("File downloaded successfully.");
+          fs.remove(path.resolve(serverConfig.box.path, 'tmp', response.fileName));
+        }
+      });
+    });
+
   });
+
+  /* let decoded = jwt.decode(req.query.token);
+   if (req.query.userId != decoded.user.email) {
+     return res.status(401).json({
+       title: 'Not Authenticated.',
+       error: {message: 'Users do not match.'},
+     });
+   }
+   console.log(path.resolve(serverConfig.box.path, decoded.user.email, req.query.path, req.query.name));
+   res.download(path.resolve(serverConfig.box.path, decoded.user.email, req.query.path, req.query.name), req.query.name, function (err) {
+     if (err) {
+       console.log("File download failed.");
+     } else {
+       console.log("File downloaded successfully.");
+       let activity = {
+         email: decoded.user.email,
+         log: "Downloaded " + req.query.name,
+       };
+       Activity.create(activity)
+         .then((activity) => {
+           console.log({
+             message: 'Activity successfully logged.',
+             log: activity.log,
+           });
+         })
+         .catch(() => {
+           console.log({
+             title: 'Activity cannot be logged.',
+             error: {message: 'Invalid Data.'},
+           });
+         });
+     }
+   });*/
 });
 
 // Upload and save file

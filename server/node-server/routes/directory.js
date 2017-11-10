@@ -16,7 +16,26 @@ let kafka = require('./kafka/client');
 
 // Get a directory from link
 router.get('/link/:path/:directoryName', function (req, res, next) {
-  zipFolder(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path), req.params.directoryName), path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path).split(path.sep)[0], 'tmp', req.params.directoryName) + '.zip', function (error) {
+
+  kafka.make_request('directoryTopic', {name: 'getDirectoryByLink', params: req.params, query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    fs.writeFile(path.resolve(serverConfig.box.path, 'tmp', response.fileName), response.buffer, 'base64', function (err) {
+      if (err) return console.error(err);
+      console.log("Wrote file " + path.resolve(serverConfig.box.path, 'tmp', response.fileName));
+      res.download(path.resolve(serverConfig.box.path, 'tmp', response.fileName), response.fileName, function (err) {
+        if (err) {
+          console.log("Directory download failed.");
+        } else {
+          console.log("Directory downloaded successfully.");
+          fs.remove(path.resolve(serverConfig.box.path, 'tmp', response.fileName));
+        }
+      });
+    });
+  });
+
+  /*zipFolder(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path), req.params.directoryName), path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path).split(path.sep)[0], 'tmp', req.params.directoryName) + '.zip', function (error) {
     if (error) {
       console.log("Directory cannot be zipped. " + error);
     } else {
@@ -36,7 +55,7 @@ router.get('/link/:path/:directoryName', function (req, res, next) {
         }
       });
     }
-  });
+  });*/
 });
 
 // Session Authentication
@@ -61,7 +80,26 @@ router.get('/download', function (req, res, next) {
       error: {message: 'Users do not match.'},
     });
   }
-  zipFolder(path.resolve(serverConfig.box.path, decoded.user.email, req.query.path, req.query.name), path.resolve(serverConfig.box.path, decoded.user.email, 'tmp', req.query.name) + '.zip', function (error) {
+
+  kafka.make_request('directoryTopic', {name: 'downloadDirectory', params: req.params, query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    fs.writeFile(path.resolve(serverConfig.box.path, 'tmp', response.fileName), response.buffer, 'base64', function (err) {
+      if (err) return console.error(err);
+      console.log("Wrote file " + path.resolve(serverConfig.box.path, 'tmp', response.fileName));
+      res.download(path.resolve(serverConfig.box.path, 'tmp', response.fileName), response.fileName, function (err) {
+        if (err) {
+          console.log("Directory download failed.");
+        } else {
+          console.log("Directory downloaded successfully.");
+          fs.remove(path.resolve(serverConfig.box.path, 'tmp', response.fileName));
+        }
+      });
+    });
+  });
+
+  /*zipFolder(path.resolve(serverConfig.box.path, decoded.user.email, req.query.path, req.query.name), path.resolve(serverConfig.box.path, decoded.user.email, 'tmp', req.query.name) + '.zip', function (error) {
     if (error) {
       console.log("Directory cannot be zipped. " + error);
     } else {
@@ -98,7 +136,7 @@ router.get('/download', function (req, res, next) {
         }
       });
     }
-  });
+  });*/
 });
 
 // Get all directories

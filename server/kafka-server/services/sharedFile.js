@@ -56,6 +56,31 @@ function handle_request(req, callback) {
   }
 
   if (req.name === 'downloadSharedFile') {
+    let decoded = jwt.decode(req.query.token);
+    SharedFile.find({where: {sharer: decoded.user.email, owner: req.body.owner, path: req.body.path, name: req.body.name}})
+      .then(() => {
+        fs.readFile(path.resolve(serverConfig.box.path, decoded.user.email, cryptr.decrypt(req.body.path), req.body.name), 'base64', function (error, buffer) {
+          if (error) {
+            console.log("File download failed.");
+          } else {
+            console.log("File downloaded successfully.");
+            res = {
+              status: 200,
+              fileName: req.body.name,
+              buffer: buffer,
+            };
+            callback(null, res);
+          }
+        });
+      })
+      .catch(() => {
+        res = {
+          status: 401,
+          title: 'Not Authenticated.',
+          error: {message: 'Users do not match.'},
+        };
+        callback(null, res);
+      });
   }
 
   if (req.name === 'starSharedFile') {

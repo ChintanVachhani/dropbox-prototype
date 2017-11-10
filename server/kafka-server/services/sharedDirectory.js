@@ -56,7 +56,46 @@ function handle_request(req, callback) {
   }
 
   if (req.name === 'downloadSharedDirectory') {
-
+    let decoded = jwt.decode(req.query.token);
+    SharedDirectory.find({where: {sharer: decoded.user.email, owner: req.body.owner, path: req.body.path, name: req.body.name}})
+      .then(() => {
+        console.log(cryptr.decrypt(req.body.path));
+        zipFolder(path.resolve(serverConfig.box.path, req.body.owner, cryptr.decrypt(req.body.path), req.body.name), path.resolve(serverConfig.box.path, req.body.owner, 'tmp', req.body.name) + '.zip', function (error) {
+          if (error) {
+            console.log("Directory cannot be zipped. " + error);
+          } else {
+            console.log('Directory zipped successfully.');
+            fs.readFile(path.resolve(serverConfig.box.path, req.body.owner, 'tmp', req.body.name) + '.zip', 'base64', function (error, buffer) {
+              if (error) {
+                console.log("Directory download failed.");
+              } else {
+                fs.remove(path.resolve(serverConfig.box.path, req.body.owner, 'tmp', req.body.name) + '.zip')
+                  .then(() => {
+                    console.log("Deleted zipped directory.");
+                  })
+                  .catch(() => {
+                    console.log("Cannot delete zipped directory.");
+                  });
+                console.log("Directory downloaded successfully.");
+                res = {
+                  status: 200,
+                  fileName: req.body.name,
+                  buffer: buffer,
+                };
+                callback(null, res);
+              }
+            });
+          }
+        });
+      })
+      .catch(() => {
+        res = {
+          status: 401,
+          title: 'Not Authenticated.',
+          error: {message: 'Users do not match.'},
+        };
+        callback(null, res);
+      });
   }
 
   if (req.name === 'starSharedDirectory') {

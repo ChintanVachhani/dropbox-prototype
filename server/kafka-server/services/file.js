@@ -16,6 +16,18 @@ function handle_request(req, callback) {
   console.log("In handle request:" + JSON.stringify(req));
 
   if (req.name === 'getFileByLink') {
+    fs.readFile(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path), req.params.fileName), 'base64', function (error, buffer) {
+      if (error) {
+        console.log("File download failed.");
+      } else {
+        console.log("File downloaded successfully.");
+        res = {
+          fileName: req.params.fileName,
+          buffer: buffer,
+        };
+        callback(null, res);
+      }
+    });
   }
 
   if (req.name === 'getAllFiles') {
@@ -93,6 +105,40 @@ function handle_request(req, callback) {
   }
 
   if (req.name === 'downloadFile') {
+
+    let decoded = jwt.decode(req.query.token);
+
+    console.log(path.resolve(serverConfig.box.path, decoded.user.email, req.query.path, req.query.name));
+
+    fs.readFile(path.resolve(serverConfig.box.path, decoded.user.email, req.query.path, req.query.name), 'base64', function (error, buffer) {
+      if (error) {
+        console.log("File download failed.");
+      } else {
+        console.log("File downloaded successfully.");
+        let activity = {
+          email: decoded.user.email,
+          log: "Downloaded " + req.query.name,
+        };
+        Activity.create(activity)
+          .then((activity) => {
+            console.log({
+              message: 'Activity successfully logged.',
+              log: activity.log,
+            });
+          })
+          .catch(() => {
+            console.log({
+              title: 'Activity cannot be logged.',
+              error: {message: 'Invalid Data.'},
+            });
+          });
+        res = {
+          fileName: req.query.name,
+          buffer: buffer,
+        };
+        callback(null, res);
+      }
+    });
   }
 
   if (req.name === 'uploadAndSaveFile') {

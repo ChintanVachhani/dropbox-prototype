@@ -115,7 +115,33 @@ router.get('/', function (req, res, next) {
 
 // Download a shared directory
 router.post('/download', function (req, res, next) {
-  let decoded = jwt.decode(req.query.token);
+
+  kafka.make_request('sharedDirectoryTopic', {name: 'downloadSharedDirectory', query: req.query, body: req.body}, function (err, response) {
+    console.log('in result--->');
+    console.log(response);
+
+    switch (response.status) {
+      case 200:
+        fs.writeFile(path.resolve(serverConfig.box.path, 'tmp', response.fileName), response.buffer, 'base64', function (err) {
+          if (err) return console.error(err);
+          console.log("Wrote file " + path.resolve(serverConfig.box.path, 'tmp', response.fileName));
+          res.download(path.resolve(serverConfig.box.path, 'tmp', response.fileName), response.fileName, function (err) {
+            if (err) {
+              console.log("Directory download failed.");
+            } else {
+              console.log("Directory downloaded successfully.");
+              fs.remove(path.resolve(serverConfig.box.path, 'tmp', response.fileName));
+            }
+          });
+        });
+        break;
+      case 401:
+        res.status(401).json(response);
+        break;
+    }
+  });
+
+  /*let decoded = jwt.decode(req.query.token);
   SharedDirectory.find({where: {sharer: decoded.user.email, owner: req.body.owner, path: req.body.path, name: req.body.name}})
     .then(() => {
     console.log(cryptr.decrypt(req.body.path));
@@ -146,7 +172,7 @@ router.post('/download', function (req, res, next) {
         title: 'Not Authenticated.',
         error: {message: 'Users do not match.'},
       });
-    });
+    });*/
 });
 
 // Star a shared directory

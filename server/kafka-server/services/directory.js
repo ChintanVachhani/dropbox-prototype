@@ -18,9 +18,81 @@ function handle_request(req, callback) {
   console.log("In handle request:" + JSON.stringify(req));
 
   if (req.name === 'getDirectoryByLink') {
+    zipFolder(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path), req.params.directoryName), path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path).split(path.sep)[0], 'tmp', req.params.directoryName) + '.zip', function (error) {
+      if (error) {
+        console.log("Directory cannot be zipped. " + error);
+      } else {
+        console.log('Directory zipped successfully.');
+        fs.readFile(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path).split(path.sep)[0], 'tmp', req.params.directoryName) + '.zip', 'base64', function (error, buffer) {
+          if (error) {
+            console.log("Directory download failed.");
+          } else {
+            fs.remove(path.resolve(serverConfig.box.path, cryptr.decrypt(req.params.path).split(path.sep)[0], 'tmp', req.params.directoryName) + '.zip')
+              .then(() => {
+                console.log("Deleted zipped directory.");
+              })
+              .catch(() => {
+                console.log("Cannot delete zipped directory.");
+              });
+            console.log("Directory downloaded successfully.");
+            res = {
+              fileName: req.params.directoryName + '.zip',
+              buffer: buffer,
+            };
+            callback(null, res);
+          }
+        });
+      }
+    });
   }
 
   if (req.name === 'downloadDirectory') {
+
+    let decoded = jwt.decode(req.query.token);
+
+    zipFolder(path.resolve(serverConfig.box.path, decoded.user.email, req.query.path, req.query.name), path.resolve(serverConfig.box.path, decoded.user.email, 'tmp', req.query.name) + '.zip', function (error) {
+      if (error) {
+        console.log("Directory cannot be zipped. " + error);
+      } else {
+        console.log('Directory zipped successfully.');
+        fs.readFile(path.resolve(serverConfig.box.path, decoded.user.email, 'tmp', req.query.name) + '.zip', 'base64', function (error, buffer) {
+          if (error) {
+            console.log("Directory download failed.");
+          } else {
+            fs.remove(path.resolve(serverConfig.box.path, decoded.user.email, 'tmp', req.query.name) + '.zip')
+              .then(() => {
+                console.log("Deleted zipped directory.");
+              })
+              .catch(() => {
+                console.log("Cannot delete zipped directory.");
+              });
+            let activity = {
+              email: decoded.user.email,
+              log: "Downloaded " + req.query.name,
+            };
+            Activity.create(activity)
+              .then((activity) => {
+                console.log({
+                  message: 'Activity successfully logged.',
+                  log: activity.log,
+                });
+              })
+              .catch(() => {
+                console.log({
+                  title: 'Activity cannot be logged.',
+                  error: {message: 'Invalid Data.'},
+                });
+              });
+            console.log("Directory downloaded successfully.");
+            res = {
+              fileName: req.query.name + '.zip',
+              buffer: buffer,
+            };
+            callback(null, res);
+          }
+        });
+      }
+    });
   }
 
   if (req.name === 'getAllDirectories') {
