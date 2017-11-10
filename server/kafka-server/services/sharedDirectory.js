@@ -1,12 +1,10 @@
-let serverConfig = require('../../config');
+let serverConfig = require('../config');
 
 let path = require('path');
-let express = require('express');
-let router = express.Router();
 let Cryptr = require('cryptr'), cryptr = new Cryptr('secret');
 let jwt = require('jsonwebtoken');
 let fs = require('fs-extra');
-let SharedDirectory = require('../../models/sharedDirectory');
+let SharedDirectory = require('../../node-server/models/sharedDirectory');
 let zipFolder = require('zip-folder');
 
 function handle_request(req, callback) {

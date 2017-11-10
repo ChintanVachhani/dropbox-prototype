@@ -218,11 +218,12 @@ router.get('/download', function (req, res, next) {
 
 // Upload and save file
 router.post('/', function (req, res, next) {
+
   let decoded = jwt.decode(req.query.token);
 
   let storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, path.resolve(serverConfig.box.path, decoded.user.email, 'tmp'))
+      cb(null, path.resolve(serverConfig.box.path, 'tmp'))
     },
     filename: function (req, file, cb) {
       cb(null, file.originalname)
@@ -230,6 +231,7 @@ router.post('/', function (req, res, next) {
   });
   let upload = multer({storage: storage, limits: {fileSize: 1000000, files: 1}}).single('file');
   upload(req, res, function (error) {
+
     if (req.body.owner != decoded.user.email) {
       return res.status(401).json({
         title: 'Not Authenticated.',
@@ -244,7 +246,7 @@ router.post('/', function (req, res, next) {
       });
     }
 
-    File.findOrCreate({
+    /*File.findOrCreate({
       where: {
         name: req.file.originalname,
         path: path.join('root', req.body.path),
@@ -281,11 +283,47 @@ router.post('/', function (req, res, next) {
           title: 'Activity cannot be logged.',
           error: {message: 'Invalid Data.'},
         });
+      });*/
+
+    fs.readFile(path.resolve(serverConfig.box.path, 'tmp', req.file.originalname), 'base64', function (error, buffer) {
+      kafka.make_request('fileTopic', {
+        name: 'uploadAndSaveFile',
+        headers: req.headers,
+        buffer: buffer,
+        file: req.file,
+        query: req.query,
+        body: req.body,
+      }, function (err, response) {
+        console.log('in result--->');
+        console.log(response);
+        fs.remove(path.resolve(serverConfig.box.path, 'tmp', req.file.originalname));
+        switch (response.status) {
+          case 200:
+            res.status(200).json(response);
+            break;
+          case 201:
+            res.status(201).json(response);
+            break;
+          case 400:
+            res.status(400).json(response);
+            break;
+          case 401:
+            res.status(401).json(response);
+            break;
+          case 404:
+            res.status(404).json(response);
+            break;
+          case 500:
+            res.status(500).json(response);
+            break;
+        }
       });
-    res.status(201).json({
+    });
+
+    /*res.status(201).json({
       message: 'File successfully uploaded.',
       name: req.file.originalname,
-    });
+    });*/
   });
 });
 

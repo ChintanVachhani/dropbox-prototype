@@ -1,13 +1,13 @@
-let serverConfig = require('../../config');
+let serverConfig = require('../config');
 
 let path = require('path');
 let Cryptr = require('cryptr'), cryptr = new Cryptr('secret');
 let jwt = require('jsonwebtoken');
 let fs = require('fs-extra');
 let multer = require('multer');
-let File = require('../../models/file');
-let SharedFile = require('../../models/sharedFile');
-let Activity = require('../../models/activity');
+let File = require('../../node-server/models/file');
+let SharedFile = require('../../node-server/models/sharedFile');
+let Activity = require('../../node-server/models/activity');
 
 function handle_request(req, callback) {
 
@@ -96,6 +96,51 @@ function handle_request(req, callback) {
   }
 
   if (req.name === 'uploadAndSaveFile') {
+
+    let decoded = jwt.decode(req.query.token);
+
+    File.findOrCreate({
+      where: {
+        name: req.file.originalname,
+        path: path.join('root', req.body.path),
+        owner: req.body.owner,
+      },
+    })
+      .then((file) => {
+        console.log('File successfully created.');
+      })
+      .catch((error) => {
+        console.error("Cannot create file. Error: " + error);
+      });
+
+    fs.writeFile(path.resolve(serverConfig.box.path, decoded.user.email, path.join('root', req.body.path), req.file.originalname), req.buffer, 'base64', function (err) {
+      if (err) return console.log(err);
+      console.log("Uploaded file " + req.file.originalname);
+    });
+
+    let activity = {
+      email: decoded.user.email,
+      log: "Uploaded " + req.file.originalname,
+    };
+    Activity.create(activity)
+      .then((activity) => {
+        console.log({
+          message: 'Activity successfully logged.',
+          log: activity.log,
+        });
+      })
+      .catch(() => {
+        console.log({
+          title: 'Activity cannot be logged.',
+          error: {message: 'Invalid Data.'},
+        });
+      });
+    res = {
+      status: 201,
+      message: 'File successfully uploaded.',
+      name: req.file.originalname,
+    };
+    callback(null, res);
   }
 
   if (req.name === 'starFile') {

@@ -1,14 +1,14 @@
-let serverConfig = require('../../config');
+let serverConfig = require('../config');
 
 let path = require('path');
 let Cryptr = require('cryptr'), cryptr = new Cryptr('secret');
 let jwt = require('jsonwebtoken');
 let fs = require('fs-extra');
-let Directory = require('../../models/directory');
-let SharedDirectory = require('../../models/sharedDirectory');
-let Activity = require('../../models/activity');
-let File = require('../../models/file');
-let SharedFile = require('../../models/sharedFile');
+let Directory = require('../../node-server/models/directory');
+let SharedDirectory = require('../../node-server/models/sharedDirectory');
+let Activity = require('../../node-server/models/activity');
+let File = require('../../node-server/models/file');
+let SharedFile = require('../../node-server/models/sharedFile');
 let zipFolder = require('zip-folder');
 
 function handle_request(req, callback) {
@@ -147,24 +147,30 @@ function handle_request(req, callback) {
                     error: {message: 'Invalid Data.'},
                   });
                 });
-              res.status(201).json({
+              res = {
+                status: 201,
                 message: 'Directory successfully created.',
                 name: directory.name,
-              });
+              };
+              callback(null, res);
             })
             .catch((error) => {
-              res.status(400).json({
+              res = {
+                status: 400,
                 title: 'Cannot create directory.',
                 error: {message: 'Invalid Data.'},
-              });
+              };
+              callback(null, res);
             });
         })
         .catch((error) => {
           console.error("Cannot create directory " + req.body.name + ". Error: " + +error);
-          res.status(400).json({
+          res = {
+            status: 400,
             title: 'Cannot create directory.',
             error: {message: 'Invalid Data.'},
-          });
+          };
+          callback(null, res);
         });
     }
   }

@@ -2,6 +2,7 @@ let express = require('express');
 let router = express.Router();
 let jwt = require('jsonwebtoken');
 let Activity = require('../models/activity');
+let kafka = require('./kafka/client');
 
 // Session Authentication
 router.use('/', function (req, res, next) {

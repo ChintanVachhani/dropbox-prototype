@@ -1,8 +1,8 @@
-let serverConfig = require('../../config');
+let serverConfig = require('../config');
 
 let path = require('path');
-let User = require('../../models/user');
-let UserAccount = require('../../models/userAccount');
+let User = require('../../node-server/models/user');
+let UserAccount = require('../../node-server/models/userAccount');
 let bcrypt = require('bcryptjs');
 let jwt = require('jsonwebtoken');
 let fs = require('fs-extra');

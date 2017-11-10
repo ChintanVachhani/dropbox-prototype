@@ -2,6 +2,9 @@ let connection = new require('./kafka/Connection');
 let user = require('./services/user');
 let file = require('./services/file');
 let directory = require('./services/directory');
+let activity = require('./services/activity');
+let sharedFile = require('./services/sharedFile');
+let sharedDirectory = require('./services/sharedDirectory');
 
 let userConsumer = connection.getConsumer('userTopic');
 let fileConsumer = connection.getConsumer('fileTopic');
@@ -85,7 +88,7 @@ activityConsumer.on('message', function (message) {
   console.log('message received');
   console.log(JSON.stringify(message.value));
   let data = JSON.parse(message.value);
-  directory.handle_request(data.data, function (err, res) {
+  activity.handle_request(data.data, function (err, res) {
     console.log('after handle', res);
     let payloads = [
       {
@@ -108,7 +111,7 @@ sharedFileConsumer.on('message', function (message) {
   console.log('message received');
   console.log(JSON.stringify(message.value));
   let data = JSON.parse(message.value);
-  directory.handle_request(data.data, function (err, res) {
+  sharedFile.handle_request(data.data, function (err, res) {
     console.log('after handle', res);
     let payloads = [
       {
@@ -131,7 +134,7 @@ sharedDirectoryConsumer.on('message', function (message) {
   console.log('message received');
   console.log(JSON.stringify(message.value));
   let data = JSON.parse(message.value);
-  directory.handle_request(data.data, function (err, res) {
+  sharedDirectory.handle_request(data.data, function (err, res) {
     console.log('after handle', res);
     let payloads = [
       {
