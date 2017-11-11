@@ -14,6 +14,10 @@ let sharedFileConsumer = connection.getConsumer('sharedFileTopic');
 let sharedDirectoryConsumer = connection.getConsumer('sharedDirectoryTopic');
 let producer = connection.getProducer();
 
+// MongoDB
+let mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost:27017/dropbox-prototype');
+
 console.log('server is running');
 userConsumer.on('message', function (message) {
   console.log('message received');

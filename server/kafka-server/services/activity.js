@@ -1,5 +1,5 @@
 let jwt = require('jsonwebtoken');
-let Activity = require('../../node-server/models/activity');
+let Activity = require('../models/activity');
 
 function handle_request(req, callback) {
 
@@ -10,7 +10,7 @@ function handle_request(req, callback) {
   if (req.name === 'getActivities') {
     let decoded = jwt.decode(req.query.token);
 
-    Activity.findAll({where: {email: decoded.user.email}, limit: Number(req.query.count), order: [['createdAt', 'DESC']]})
+    Activity.find({email: decoded.user.email}).sort({'createdAt': -1}).limit(Number(req.query.count))
       .then((activities) => {
         res = {
           status: 200,
@@ -31,7 +31,7 @@ function handle_request(req, callback) {
 
   if (req.name === 'getAllActivities') {
     let decoded = jwt.decode(req.query.token);
-    Activity.findAll({where: {email: decoded.user.email}})
+    Activity.find({email: decoded.user.email})
       .then((activities) => {
         res = {
           status: 200,

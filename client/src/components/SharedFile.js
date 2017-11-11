@@ -50,7 +50,7 @@ class File extends Component {
           className="float-right"><a href=""><i className="material-icons star-icon text-primary" onClick={(e) => {
           e.preventDefault();
           handleStarFile({
-            id: file.id,
+            _id: file._id,
             starred: !file.starred,
           });
           if (!this.props.content.error) {
@@ -78,7 +78,7 @@ class File extends Component {
                             handleDeleteFile({
                               name: file.name,
                               path: file.path,
-                              id: file.id,
+                              _id: file._id,
                             });
                             if (!this.props.content.error) {
                               this.props.content.files.splice(key, 1);

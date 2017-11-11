@@ -64,7 +64,7 @@ class SharedDirectory extends Component {
           <span className="float-right"><a href=""><i className="material-icons star-icon text-primary" onClick={(e) => {
             e.preventDefault();
             handleStarDirectory({
-              id: directory.id,
+              _id: directory._id,
               starred: !directory.starred,
             });
             if (!this.props.content.error) {
@@ -92,7 +92,7 @@ class SharedDirectory extends Component {
                             handleDeleteDirectory({
                               name: directory.name,
                               path: directory.path,
-                              id: directory.id,
+                              _id: directory._id,
                             });
                             if (!this.props.content.error) {
                               this.props.content.directories.splice(key, 1);

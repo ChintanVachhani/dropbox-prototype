@@ -2,9 +2,10 @@
 npm-debug.log
 .idea/
 dump.rdb
-server/kafka-server/box/
 .editorconfig
 /client/node_modules/
-server/kafka-server/node_modules/
-server/node-server/box/
-server/node-server/node_modules/
+/server/kafka-server/box/
+/server/node-server/box/
+/server/kafka-server/node_modules/
+/server/node-server/node_modules/
+

@@ -221,7 +221,7 @@ router.get('/search', function (req, res, next) {
       where: {
         $or: {
           firstName: {$like: '%' + req.query.searchString + '%'},
-          lastname: {$like: '%' + req.query.searchString + '%'},
+          lastName: {$like: '%' + req.query.searchString + '%'},
           email: {$like: '%' + req.query.searchString + '%'},
         },
       },

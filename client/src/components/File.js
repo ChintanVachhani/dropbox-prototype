@@ -89,16 +89,16 @@ class File extends Component {
           className="material-icons star-icon text-primary" onClick={(e) => {
           e.preventDefault();
           handleStarFile({
-            id: file.id,
+            _id: file._id,
             starred: !file.starred,
           });
           if (!this.props.content.error) {
             file.starred = !file.starred
           }
         }}>{file.starred ? 'star' : 'star_border'}</i></a>&nbsp;&nbsp;&nbsp;&nbsp;
-          <a className="btn btn-light btn-sm share-btn" href="" role="button" data-toggle="modal" data-target={"#" + file.id}>Share</a>&nbsp;&nbsp;&nbsp;&nbsp;
+          <a className="btn btn-light btn-sm share-btn" href="" role="button" data-toggle="modal" data-target={"#" + file._id}>Share</a>&nbsp;&nbsp;&nbsp;&nbsp;
 
-          <div className="modal center fade mh-75" id={file.id} tabIndex="-1" role="dialog" aria-labelledby="share-modal-label" aria-hidden="true">
+          <div className="modal center fade mh-75" id={file._id} tabIndex="-1" role="dialog" aria-labelledby="share-modal-label" aria-hidden="true">
             <div className="modal-dialog" role="document">
             <div className="modal-content">
              <div className="modal-header">
@@ -120,7 +120,7 @@ class File extends Component {
                 <span><i className="material-icons text-secondary float-left">link</i><p className="lead lead-modified float-left"><strong>No</strong> link created yet.</p><p
                   className="lead lead-modified float-right"><a href="" data-dismiss="modal" onClick={(e) => {
                   e.preventDefault();
-                  handleCreateShareLink(file.id);
+                  handleCreateShareLink(file._id);
                   if (!this.props.content.error) {
                     file.link = this.props.content.alert;
                   }
@@ -131,7 +131,7 @@ class File extends Component {
              <button type="button" className="btn btn-primary btn-sm" data-dismiss="modal" onClick={(e) => {
                let sharers = this.state.sharers.split(',');
                handleFileShare({
-                 id: file.id,
+                 _id: file._id,
                  name: file.name,
                  path: file.path,
                  owner: file.owner,
@@ -164,7 +164,7 @@ class File extends Component {
                             handleDeleteFile({
                               name: file.name,
                               path: file.path,
-                              id: file.id,
+                              _id: file._id,
                             });
                             if (!this.props.content.error) {
                               this.props.content.files.splice(key, 1);

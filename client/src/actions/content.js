@@ -461,7 +461,7 @@ export function createShareLink(id) {
     axios({
       method: 'patch',
       url: `${SERVER_URL}/file/link?token=${localStorage.getItem('token')}`,
-      data: {id: id},
+      data: {_id: id},
     })
       .then((result) => {
         if (result.response && result.response.status !== 200) {
@@ -493,7 +493,7 @@ export function createShareLinkDirectory(id) {
     axios({
       method: 'patch',
       url: `${SERVER_URL}/directory/link?token=${localStorage.getItem('token')}`,
-      data: {id: id},
+      data: {_id: id},
     })
       .then((result) => {
         if (result.response && result.response.status !== 200) {

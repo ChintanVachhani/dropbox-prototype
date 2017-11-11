@@ -51,9 +51,9 @@ app.use(function (req, res, next) {
 
 // start app
 app.listen(serverConfig.port, (error) => {
-    if (!error) {
-        console.log(`dropbox-prototype is running on port: ${serverConfig.port}!`);
-    }
+  if (!error) {
+    console.log(`dropbox-prototype is running on port: ${serverConfig.port}!`);
+  }
 });
 
 module.exports = app;

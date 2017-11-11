@@ -1,6 +1,5 @@
 let passport = require("passport");
 let LocalStrategy = require("passport-local").Strategy;
-let mongoURL = "mongodb://localhost:27017/dropbox-prototype";
 let kafka = require('./kafka/client');
 
 module.exports = function (passport) {

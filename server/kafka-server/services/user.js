@@ -1,8 +1,8 @@
 let serverConfig = require('../config');
 
 let path = require('path');
-let User = require('../../node-server/models/user');
-let UserAccount = require('../../node-server/models/userAccount');
+let User = require('../models/user');
+let UserAccount = require('../models/userAccount');
 let bcrypt = require('bcryptjs');
 let jwt = require('jsonwebtoken');
 let fs = require('fs-extra');
@@ -14,45 +14,63 @@ function handle_request(req, callback) {
   console.log("In handle request:" + JSON.stringify(req));
 
   if (req.name === 'signin') {
-    User.find({where: {email: req.body.email}})
-      .then((user) => {
-        if (!bcrypt.compareSync(req.body.password, user.password)) {
-          res = {
-            status: 401,
-            title: 'Signing in failed.',
-            error: {message: 'Invalid credentials.'},
-          };
-          callback(null, res);
-        } else {
-          let token = jwt.sign({user: user}, 'secret', {expiresIn: 7200});
-          res = {
-            status: 200,
-            message: 'Successfully signed in.',
-            token: token,
-            userId: user.email,
-          };
-          callback(null, res);
-        }
-      })
-      .catch(() => {
+    User.findOne({email: req.body.email}, function (error, user) {
+      if (error) {
+        console.error(error);
         res = {
           status: 401,
           title: 'Signing in failed.',
           error: {message: 'Invalid credentials.'},
         };
         callback(null, res);
-      });
+      } else {
+        console.error(user);
+        if (user) {
+          if (!bcrypt.compareSync(req.body.password, user.password)) {
+            res = {
+              status: 401,
+              title: 'Signing in failed.',
+              error: {message: 'Invalid credentials.'},
+            };
+            callback(null, res);
+          } else {
+            let token = jwt.sign({user: user}, 'secret', {expiresIn: 7200});
+            res = {
+              status: 200,
+              message: 'Successfully signed in.',
+              token: token,
+              userId: user.email,
+            };
+            callback(null, res);
+          }
+        } else {
+          res = {
+            status: 401,
+            title: 'Signing in failed.',
+            error: {message: 'Invalid credentials.'},
+          };
+          callback(null, res);
+        }
+      }
+    });
   }
 
   if (req.name === 'signup') {
-    let user = {
+    let user = User({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, 10),
-    };
-    User.create(user)
-      .then((user) => {
+    });
+    user.save(function (error) {
+      if (error) {
+        res = {
+          status: 400,
+          title: 'Signing up failed.',
+          error: {message: 'Invalid Data.'},
+        };
+        callback(null, res);
+      } else {
         // Creates root directory for the signed up user.
         fs.ensureDir(path.resolve(serverConfig.box.path, user.email, 'root'))
           .then(() => {
@@ -75,7 +93,7 @@ function handle_request(req, callback) {
           .catch((error) => {
             console.error("Cannot create group directory for " + user.email + ". Error: " + error);
           });
-        let userAccount = {
+        let userAccount = UserAccount({
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
@@ -86,27 +104,24 @@ function handle_request(req, callback) {
           city: '',
           zipcode: '',
           interests: '',
-        };
-        UserAccount.create(userAccount);
-        res = {
-          status: 201,
-          message: 'Successfully signed up.',
-          userId: user.email,
-        };
-        callback(null, res);
-      })
-      .catch(() => {
-        res = {
-          status: 400,
-          title: 'Signing up failed.',
-          error: {message: 'Invalid Data.'},
-        };
-        callback(null, res);
-      });
+        });
+        userAccount.save(function (error) {
+          if (error) {
+            console.error(error);
+          }
+          res = {
+            status: 201,
+            message: 'Successfully signed up.',
+            userId: user.email,
+          };
+          callback(null, res);
+        });
+      }
+    });
   }
 
   if (req.name === 'getUser') {
-    User.find({attributes: ['firstName', 'lastName', 'email'], where: {email: req.query.userId}})
+    User.findOne({email: req.query.userId}, ['firstName', 'lastName', 'email'])
       .then((user) => {
         res = {
           status: 200,
@@ -127,16 +142,13 @@ function handle_request(req, callback) {
 
   if (req.name === 'getUsers') {
     if (req.query.searchString.length > 0) {
-      User.findAll({
-        attributes: ['firstName', 'lastname', 'email'],
-        where: {
-          $or: {
-            firstName: {$like: '%' + req.query.searchString + '%'},
-            lastname: {$like: '%' + req.query.searchString + '%'},
-            email: {$like: '%' + req.query.searchString + '%'},
-          },
-        },
-      })
+      User.find({
+        $or: [
+          {firstName: {$regex: '.*' + req.query.searchString + '.*'}},
+          {lastName: {$regex: '.*' + req.query.searchString + '.*'}},
+          {email: {$regex: '.*' + req.query.searchString + '.*'}},
+        ],
+      }, ['firstName', 'lastname', 'email'])
         .then((users) => {
           res = {
             status: 200,
@@ -173,7 +185,7 @@ function handle_request(req, callback) {
       };
       callback(null, res);
     }
-    UserAccount.find({where: {email: req.query.userId}})
+    UserAccount.findOne({email: req.query.userId})
       .then((userAccount) => {
         res = {
           status: 200,
@@ -202,27 +214,33 @@ function handle_request(req, callback) {
       };
       callback(null, res);
     }
-    User.find({where: {email: req.body.email}})
+    User.findOne({email: req.body.email})
       .then((user) => {
-        UserAccount.find({where: {email: req.body.email}})
+        UserAccount.findOne({email: req.body.email})
           .then((userAccount) => {
-            userAccount.updateAttributes({
-              firstName: req.body.firstName,
-              lastName: req.body.lastName,
-              work: req.body.work,
-              education: req.body.education,
-              address: req.body.address,
-              country: req.body.country,
-              city: req.body.city,
-              zipcode: req.body.zipcode,
-              interests: req.body.interests,
+
+            userAccount.firstName = req.body.firstName;
+            userAccount.lastName = req.body.lastName;
+            userAccount.work = req.body.work;
+            userAccount.education = req.body.education;
+            userAccount.address = req.body.address;
+            userAccount.country = req.body.country;
+            userAccount.city = req.body.city;
+            userAccount.zipcode = req.body.zipcode;
+            userAccount.interests = req.body.interests;
+
+            userAccount.save(function (error) {
+              if (error) {
+                console.error(error);
+              }
+              res = {
+                status: 200,
+                message: 'User account successfully updated.',
+                data: userAccount,
+              };
+              callback(null, res);
             });
-            res = {
-              status: 200,
-              message: 'User account successfully updated.',
-              data: userAccount,
-            };
-            callback(null, res);
+
           })
           .catch(() => {
             res = {

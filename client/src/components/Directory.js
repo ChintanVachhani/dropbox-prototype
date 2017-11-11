@@ -108,7 +108,7 @@ class Directory extends Component {
           <span className="float-right"><a href=""><i className="material-icons star-icon text-primary" onClick={(e) => {
             e.preventDefault();
             handleStarDirectory({
-              id: directory.id,
+              _id: directory._id,
               starred: !directory.starred,
             });
             if (!this.props.content.error) {
@@ -116,9 +116,9 @@ class Directory extends Component {
             }
           }}>{directory.starred ? 'star' : 'star_border'}</i></a>&nbsp;&nbsp;&nbsp;&nbsp;
 
-            <a className="btn btn-light btn-sm share-btn" href="" role="button" data-toggle="modal" data-target={"#" + directory.id}>Share</a>&nbsp;&nbsp;&nbsp;&nbsp;
+            <a className="btn btn-light btn-sm share-btn" href="" role="button" data-toggle="modal" data-target={"#" + directory._id}>Share</a>&nbsp;&nbsp;&nbsp;&nbsp;
 
-            <div className="modal center fade mh-75" id={directory.id} tabIndex="-1" role="dialog" aria-labelledby="share-modal-label" aria-hidden="true">
+            <div className="modal center fade mh-75" id={directory._id} tabIndex="-1" role="dialog" aria-labelledby="share-modal-label" aria-hidden="true">
             <div className="modal-dialog" role="document">
             <div className="modal-content">
              <div className="modal-header">
@@ -140,7 +140,7 @@ class Directory extends Component {
                 <span><i className="material-icons text-secondary float-left">link</i><p className="lead lead-modified float-left"><strong>No</strong> link created yet.</p><p
                   className="lead lead-modified float-right"><a href="" data-dismiss="modal" onClick={(e) => {
                   e.preventDefault();
-                  handleCreateShareLinkDirectory(directory.id);
+                  handleCreateShareLinkDirectory(directory._id);
                   if (!this.props.content.error) {
                     directory.link = this.props.content.alert;
                   }
@@ -152,7 +152,7 @@ class Directory extends Component {
              <button type="button" className="btn btn-primary btn-sm" data-dismiss="modal" onClick={(e) => {
                let sharers = this.state.sharers.split(',');
                handleDirectoryShare({
-                 id: directory.id,
+                 _id: directory._id,
                  name: directory.name,
                  path: directory.path,
                  owner: directory.owner,
@@ -184,7 +184,7 @@ class Directory extends Component {
                             handleDeleteDirectory({
                               name: directory.name,
                               path: directory.path,
-                              id: directory.id,
+                              _id: directory._id,
                             });
                             if (!this.props.content.error) {
                               this.props.content.directories.splice(key, 1);
