@@ -8,4 +8,5 @@ dump.rdb
 /server/node-server/box/
 /server/kafka-server/node_modules/
 /server/node-server/node_modules/
-
+/server/kafka-server/node_modules/.bin/
+/server/node-server/node_modules/.bin/

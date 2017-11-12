@@ -8,7 +8,7 @@ An individual effort to create a simple Dropbox replica. It uses NodeJS, Express
   git clone https://github.com/ChintanVachhani/dropbox-prototype.git
 ```
 
-**Note : Please make sure your MongoDB is running.** Also `npm3` is required to install dependencies properly.
+**Note : Please make sure your MongoDB, Zookeeper and Kafka are running.** Refer https://kafka.apache.org/quickstart for kafka setup. Use the createTopicsScript.bat for windows or createTopicsScript.sh for other OS to create the required topics on kafka. Instructions on where to put the scripts file to run are present in the file. Also `npm3` is required to install dependencies properly.
 
 ## Commands
 
