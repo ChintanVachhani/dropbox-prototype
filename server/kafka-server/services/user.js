@@ -7,6 +7,9 @@ let bcrypt = require('bcryptjs');
 let jwt = require('jsonwebtoken');
 let fs = require('fs-extra');
 
+/*let ConnectionManager = require('../mongo');
+let connection = ConnectionManager.getConnection();*/
+
 function handle_request(req, callback) {
 
   let res;
@@ -22,6 +25,7 @@ function handle_request(req, callback) {
           title: 'Signing in failed.',
           error: {message: 'Invalid credentials.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       } else {
         console.error(user);
@@ -32,6 +36,7 @@ function handle_request(req, callback) {
               title: 'Signing in failed.',
               error: {message: 'Invalid credentials.'},
             };
+            //ConnectionManager.releaseConnection(connection);
             callback(null, res);
           } else {
             let token = jwt.sign({user: user}, 'secret', {expiresIn: 7200});
@@ -41,6 +46,7 @@ function handle_request(req, callback) {
               token: token,
               userId: user.email,
             };
+            //ConnectionManager.releaseConnection(connection);
             callback(null, res);
           }
         } else {
@@ -49,6 +55,7 @@ function handle_request(req, callback) {
             title: 'Signing in failed.',
             error: {message: 'Invalid credentials.'},
           };
+          //ConnectionManager.releaseConnection(connection);
           callback(null, res);
         }
       }
@@ -69,6 +76,7 @@ function handle_request(req, callback) {
           title: 'Signing up failed.',
           error: {message: 'Invalid Data.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       } else {
         // Creates root directory for the signed up user.
@@ -114,6 +122,7 @@ function handle_request(req, callback) {
             message: 'Successfully signed up.',
             userId: user.email,
           };
+          //ConnectionManager.releaseConnection(connection);
           callback(null, res);
         });
       }
@@ -128,6 +137,7 @@ function handle_request(req, callback) {
           message: 'Successfully retrieved user information.',
           data: user,
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       })
       .catch(() => {
@@ -136,6 +146,7 @@ function handle_request(req, callback) {
           title: 'Cannot retrieve user information.',
           error: {message: 'User not found.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       });
   }
@@ -155,6 +166,7 @@ function handle_request(req, callback) {
             message: 'Users retrieved successfully.',
             data: users,
           };
+          //ConnectionManager.releaseConnection(connection);
           callback(null, res);
         })
         .catch(() => {
@@ -163,6 +175,7 @@ function handle_request(req, callback) {
             title: 'Cannot retrieve users.',
             error: {message: 'Internal Server Error.'},
           };
+          //ConnectionManager.releaseConnection(connection);
           callback(null, res);
         });
     } else {
@@ -171,6 +184,7 @@ function handle_request(req, callback) {
         message: 'No search string.',
         data: [],
       };
+      //ConnectionManager.releaseConnection(connection);
       callback(null, res);
     }
   }
@@ -183,15 +197,17 @@ function handle_request(req, callback) {
         title: 'Not Authenticated.',
         error: {message: 'Users do not match.'},
       };
+      //ConnectionManager.releaseConnection(connection);
       callback(null, res);
     }
     UserAccount.findOne({email: req.query.userId})
       .then((userAccount) => {
         res = {
           status: 200,
-          message: 'User account successfully updated.',
+          message: 'User account successfully retrieved.',
           data: userAccount,
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       })
       .catch(() => {
@@ -200,6 +216,7 @@ function handle_request(req, callback) {
           title: 'Cannot update user account.',
           error: {message: 'User account not found.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       });
   }
@@ -212,6 +229,7 @@ function handle_request(req, callback) {
         title: 'Not Authenticated.',
         error: {message: 'Users do not match.'},
       };
+      //ConnectionManager.releaseConnection(connection);
       callback(null, res);
     }
     User.findOne({email: req.body.email})
@@ -238,6 +256,7 @@ function handle_request(req, callback) {
                 message: 'User account successfully updated.',
                 data: userAccount,
               };
+              //ConnectionManager.releaseConnection(connection);
               callback(null, res);
             });
 
@@ -248,6 +267,7 @@ function handle_request(req, callback) {
               title: 'Cannot update user account.',
               error: {message: 'User account not found.'},
             };
+            //ConnectionManager.releaseConnection(connection);
             callback(null, res);
           })
           .catch(() => {
@@ -256,6 +276,7 @@ function handle_request(req, callback) {
               title: 'Cannot update user account.',
               error: {message: 'User not found.'},
             };
+            //ConnectionManager.releaseConnection(connection);
             callback(null, res);
           });
       });

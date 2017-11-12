@@ -10,6 +10,7 @@
   "author": "Chintan Vachhani <chintan.vachhani10@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "arraylist": "^0.1.0",
     "bcryptjs": "^2.4.3",
     "cryptr": "^2.0.0",
     "fs-extra": "^4.0.2",

@@ -15,15 +15,20 @@ let sharedDirectoryConsumer = connection.getConsumer('sharedDirectoryTopic');
 let producer = connection.getProducer();
 
 // MongoDB
-let mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/dropbox-prototype');
+let ConnectionManager = require('./mongo');
+const mongoDBConnection = new ConnectionManager(250);
+
+/*let mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost:27017/dropbox-prototype', {poolSize: 250});*/
 
 console.log('server is running');
 userConsumer.on('message', function (message) {
+  let connection = ConnectionManager.getConnection();
   console.log('message received');
   console.log(JSON.stringify(message.value));
   let data = JSON.parse(message.value);
   user.handle_request(data.data, function (err, res) {
+    ConnectionManager.releaseConnection(connection);
     console.log('after handle', res);
     let payloads = [
       {
@@ -43,10 +48,12 @@ userConsumer.on('message', function (message) {
 });
 
 fileConsumer.on('message', function (message) {
+  let connection = ConnectionManager.getConnection();
   console.log('message received');
   console.log(JSON.stringify(message.value));
   let data = JSON.parse(message.value);
   file.handle_request(data.data, function (err, res) {
+    ConnectionManager.releaseConnection(connection);
     console.log('after handle', res);
     let payloads = [
       {
@@ -66,10 +73,12 @@ fileConsumer.on('message', function (message) {
 });
 
 directoryConsumer.on('message', function (message) {
+  let connection = ConnectionManager.getConnection();
   console.log('message received');
   console.log(JSON.stringify(message.value));
   let data = JSON.parse(message.value);
   directory.handle_request(data.data, function (err, res) {
+    ConnectionManager.releaseConnection(connection);
     console.log('after handle', res);
     let payloads = [
       {
@@ -89,10 +98,12 @@ directoryConsumer.on('message', function (message) {
 });
 
 activityConsumer.on('message', function (message) {
+  let connection = ConnectionManager.getConnection();
   console.log('message received');
   console.log(JSON.stringify(message.value));
   let data = JSON.parse(message.value);
   activity.handle_request(data.data, function (err, res) {
+    ConnectionManager.releaseConnection(connection);
     console.log('after handle', res);
     let payloads = [
       {
@@ -112,10 +123,12 @@ activityConsumer.on('message', function (message) {
 });
 
 sharedFileConsumer.on('message', function (message) {
+  let connection = ConnectionManager.getConnection();
   console.log('message received');
   console.log(JSON.stringify(message.value));
   let data = JSON.parse(message.value);
   sharedFile.handle_request(data.data, function (err, res) {
+    ConnectionManager.releaseConnection(connection);
     console.log('after handle', res);
     let payloads = [
       {
@@ -135,10 +148,12 @@ sharedFileConsumer.on('message', function (message) {
 });
 
 sharedDirectoryConsumer.on('message', function (message) {
+  let connection = ConnectionManager.getConnection();
   console.log('message received');
   console.log(JSON.stringify(message.value));
   let data = JSON.parse(message.value);
   sharedDirectory.handle_request(data.data, function (err, res) {
+    ConnectionManager.releaseConnection(connection);
     console.log('after handle', res);
     let payloads = [
       {

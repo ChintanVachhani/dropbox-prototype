@@ -11,6 +11,9 @@ let File = require('../models/file');
 let SharedFile = require('../models/sharedFile');
 let zipFolder = require('zip-folder');
 
+/*let ConnectionManager = require('../mongo');
+let connection = ConnectionManager.getConnection();*/
+
 function handle_request(req, callback) {
 
   let res;
@@ -39,6 +42,7 @@ function handle_request(req, callback) {
               fileName: req.params.directoryName + '.zip',
               buffer: buffer,
             };
+            //ConnectionManager.releaseConnection(connection);
             callback(null, res);
           }
         });
@@ -87,6 +91,7 @@ function handle_request(req, callback) {
               fileName: req.query.name + '.zip',
               buffer: buffer,
             };
+            //ConnectionManager.releaseConnection(connection);
             callback(null, res);
           }
         });
@@ -103,6 +108,7 @@ function handle_request(req, callback) {
           message: 'Directories retrieved successfully.',
           data: directories,
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       })
       .catch(() => {
@@ -111,6 +117,7 @@ function handle_request(req, callback) {
           title: 'Cannot retrieve directories.',
           error: {message: 'Internal server error.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       });
   }
@@ -124,6 +131,7 @@ function handle_request(req, callback) {
           message: 'Directories retrieved successfully.',
           data: directories,
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       })
       .catch(() => {
@@ -132,6 +140,7 @@ function handle_request(req, callback) {
           title: 'Cannot retrieve directories.',
           error: {message: 'Internal server error.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       });
   }
@@ -145,6 +154,7 @@ function handle_request(req, callback) {
           title: 'Cannot create shareable link.',
           error: {message: 'Directory not found.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
       if (directory.owner != decoded.user.email) {
@@ -153,6 +163,7 @@ function handle_request(req, callback) {
           title: 'Not Authenticated.',
           error: {message: 'Users do not match.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
       directory.updateAttributes({
@@ -163,6 +174,7 @@ function handle_request(req, callback) {
         message: "Directory's shareable link successfully created.",
         link: directory.link,
       };
+      //ConnectionManager.releaseConnection(connection);
       callback(null, res);
     });
   }
@@ -175,6 +187,7 @@ function handle_request(req, callback) {
         title: 'Not Authenticated.',
         error: {message: 'Users do not match.'},
       };
+      //ConnectionManager.releaseConnection(connection);
       callback(null, res);
     }
     let directoryExists = false;
@@ -205,6 +218,7 @@ function handle_request(req, callback) {
                 title: 'Cannot create directory.',
                 error: {message: 'Invalid Data.'},
               };
+              //ConnectionManager.releaseConnection(connection);
               callback(null, res);
             }
             let activity = Activity({
@@ -228,6 +242,7 @@ function handle_request(req, callback) {
               message: 'Directory successfully created.',
               name: directory.name,
             };
+            //ConnectionManager.releaseConnection(connection);
             callback(null, res);
           });
         })
@@ -238,6 +253,7 @@ function handle_request(req, callback) {
             title: 'Cannot create directory.',
             error: {message: 'Invalid Data.'},
           };
+          //ConnectionManager.releaseConnection(connection);
           callback(null, res);
         });
     }
@@ -253,6 +269,7 @@ function handle_request(req, callback) {
           title: 'Cannot star directory.',
           error: {message: 'Directory not found.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
       if (directory.owner != decoded.user.email) {
@@ -261,6 +278,7 @@ function handle_request(req, callback) {
           title: 'Not Authenticated.',
           error: {message: 'Users do not match.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
       directory.starred = req.body.starred;
@@ -291,6 +309,7 @@ function handle_request(req, callback) {
         message: 'Directory successfully starred.',
         name: directory.name,
       };
+      //ConnectionManager.releaseConnection(connection);
       callback(null, res);
     });
   }
@@ -313,6 +332,7 @@ function handle_request(req, callback) {
             title: 'Not Authenticated.',
             error: {message: 'Users do not match.'},
           };
+          //ConnectionManager.releaseConnection(connection);
           callback(null, res);
         }
         for (let i = 0, len = req.body.sharers.length; i < len; i++) {
@@ -324,9 +344,9 @@ function handle_request(req, callback) {
             sharer: sharer,
             show: toShow,
           }).then((sharedDirectory) => {
-            if(sharedDirectory){
+            if (sharedDirectory) {
               console.log("Sharer exists!");
-            } else{
+            } else {
               let sharedDirectory = SharedDirectory({
                 name: directoryName,
                 owner: req.body.owner,
@@ -389,9 +409,9 @@ function handle_request(req, callback) {
                       owner: req.body.owner,
                       sharer: sharer,
                     }).then((sharedFile) => {
-                      if(sharedFile){
+                      if (sharedFile) {
                         console.log("Sharer exists!");
-                      } else{
+                      } else {
                         let sharedFile = SharedFile({
                           name: file.name,
                           path: cryptr.encrypt(file.path,),
@@ -463,6 +483,7 @@ function handle_request(req, callback) {
         message: 'Directory successfully shared.',
         name: req.body.name,
       };
+      //ConnectionManager.releaseConnection(connection);
       callback(null, res);
     } else {
       res = {
@@ -470,6 +491,7 @@ function handle_request(req, callback) {
         title: 'Cannot share directory.',
         error: {message: 'Internal server error.'},
       };
+      //ConnectionManager.releaseConnection(connection);
       callback(null, res);
     }
   }
@@ -484,6 +506,7 @@ function handle_request(req, callback) {
           title: 'Cannot rename directory.',
           error: {message: 'Directory not found.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
       if (directory.owner != decoded.user.email) {
@@ -492,6 +515,7 @@ function handle_request(req, callback) {
           title: 'Not Authenticated.',
           error: {message: 'Users do not match.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
       fs.pathExists(path.resolve(serverConfig.box.path, directory.owner, req.body.path, directory.name))
@@ -511,6 +535,7 @@ function handle_request(req, callback) {
                   message: 'Directory successfully renamed.',
                   name: req.body.name,
                 };
+                //ConnectionManager.releaseConnection(connection);
                 callback(null, res);
               })
               .catch(() => {
@@ -520,6 +545,7 @@ function handle_request(req, callback) {
                   title: 'Cannot rename directory.',
                   error: {message: 'Internal server error.'},
                 };
+                //ConnectionManager.releaseConnection(connection);
                 callback(null, res);
               })
 
@@ -529,6 +555,7 @@ function handle_request(req, callback) {
               title: 'Cannot rename directory.',
               error: {message: 'Directory not found.'},
             };
+            //ConnectionManager.releaseConnection(connection);
             callback(null, res);
           }
         })
@@ -538,6 +565,7 @@ function handle_request(req, callback) {
             title: 'Cannot rename directory.',
             error: {message: 'Internal server error.'},
           };
+          //ConnectionManager.releaseConnection(connection);
           callback(null, res);
         });
     });
@@ -552,6 +580,7 @@ function handle_request(req, callback) {
           title: 'Cannot delete directory.',
           error: {message: 'Directory not found.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
       if (directory.owner != decoded.user.email) {
@@ -560,6 +589,7 @@ function handle_request(req, callback) {
           title: 'Not Authenticated.',
           error: {message: 'Users do not match.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
       fs.pathExists(path.resolve(serverConfig.box.path, directory.owner, req.body.path, req.body.name))
@@ -594,6 +624,7 @@ function handle_request(req, callback) {
                   message: 'Directory successfully deleted.',
                   name: req.body.name,
                 };
+                //ConnectionManager.releaseConnection(connection);
                 callback(null, res);
               })
               .catch(() => {
@@ -602,6 +633,7 @@ function handle_request(req, callback) {
                   title: 'Cannot delete directory.',
                   error: {message: 'Internal server error.'},
                 };
+                //ConnectionManager.releaseConnection(connection);
                 callback(null, res);
               })
           } else {
@@ -610,6 +642,7 @@ function handle_request(req, callback) {
               title: 'Cannot delete directory.',
               error: {message: 'Directory not found.'},
             };
+            //ConnectionManager.releaseConnection(connection);
             callback(null, res);
           }
         })
@@ -619,6 +652,7 @@ function handle_request(req, callback) {
             title: 'Cannot delete directory.',
             error: {message: 'Internal server error.'},
           };
+          //ConnectionManager.releaseConnection(connection);
           callback(null, res);
         });
     });

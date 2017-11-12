@@ -1,6 +1,6 @@
 # dropbox-prototype
 
-An individual effort to create a simple Dropbox replica. It uses NodeJS, ExpressJS, ReactJS & MySQL.
+An individual effort to create a simple Dropbox replica. It uses NodeJS, ExpressJS, ReactJS, MongoDB and Apache Kafka.
 
 ## Git Repository
 
@@ -8,21 +8,29 @@ An individual effort to create a simple Dropbox replica. It uses NodeJS, Express
   git clone https://github.com/ChintanVachhani/dropbox-prototype.git
 ```
 
-**Note : Please make sure your MySQL is running and has a database named 'dropbox-prototype'.** Also `npm3` is required to install dependencies properly.
+**Note : Please make sure your MongoDB is running.** Also `npm3` is required to install dependencies properly.
 
 ## Commands
 
-####1. Run the Server
+####1. Run the Node Server
    ```
    cd server
+   cd node-server
    npm install
    npm run start
    ```
    - **Note :**
       - Server started @ 'localhost:8000'.
-      - Make sure 'mysql' are running on your machine.
+      
+####2. Run the Kafka Server
+   ```
+   cd server
+   cd kafka-server
+   npm install
+   npm run start
+   ```
 
-####2. Run the Client - localhost:3000
+####3. Run the Client
    ```
    cd client
    npm install

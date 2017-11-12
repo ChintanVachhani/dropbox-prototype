@@ -1,6 +1,9 @@
 let jwt = require('jsonwebtoken');
 let Activity = require('../models/activity');
 
+/*let ConnectionManager = require('../mongo');
+let connection = ConnectionManager.getConnection();*/
+
 function handle_request(req, callback) {
 
   let res;
@@ -17,6 +20,7 @@ function handle_request(req, callback) {
           message: 'Activities retrieved successfully.',
           data: activities,
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       })
       .catch(() => {
@@ -25,6 +29,7 @@ function handle_request(req, callback) {
           title: 'Cannot retrieve activities.',
           error: {message: 'Internal server error.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       });
   }
@@ -38,6 +43,7 @@ function handle_request(req, callback) {
           message: 'Activities retrieved successfully.',
           data: activities,
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       })
       .catch(() => {
@@ -46,6 +52,7 @@ function handle_request(req, callback) {
           title: 'Cannot retrieve activities.',
           error: {message: 'Internal server error.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       });
   }

@@ -4,8 +4,11 @@ let path = require('path');
 let Cryptr = require('cryptr'), cryptr = new Cryptr('secret');
 let jwt = require('jsonwebtoken');
 let fs = require('fs-extra');
-let SharedDirectory = require('../../node-server/models/sharedDirectory');
+let SharedDirectory = require('../models/sharedDirectory');
 let zipFolder = require('zip-folder');
+
+/*let ConnectionManager = require('../mongo');
+let connection = ConnectionManager.getConnection();*/
 
 function handle_request(req, callback) {
 
@@ -22,6 +25,7 @@ function handle_request(req, callback) {
           message: 'Shared directories list retrieved successfully.',
           data: sharedDirectories,
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       })
       .catch(() => {
@@ -30,6 +34,7 @@ function handle_request(req, callback) {
           title: 'Cannot retrieve shared directories list.',
           error: {message: 'Internal server error.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       });
   }
@@ -43,6 +48,7 @@ function handle_request(req, callback) {
           message: 'Shared directories retrieved successfully.',
           data: sharedDirectories,
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       })
       .catch(() => {
@@ -51,6 +57,7 @@ function handle_request(req, callback) {
           title: 'Cannot retrieve shared directories.',
           error: {message: 'Internal server error.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       });
   }
@@ -82,6 +89,7 @@ function handle_request(req, callback) {
                   fileName: req.body.name,
                   buffer: buffer,
                 };
+                //ConnectionManager.releaseConnection(connection);
                 callback(null, res);
               }
             });
@@ -94,6 +102,7 @@ function handle_request(req, callback) {
           title: 'Not Authenticated.',
           error: {message: 'Users do not match.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       });
   }
@@ -107,6 +116,7 @@ function handle_request(req, callback) {
           title: 'Cannot star shared directory.',
           error: {message: 'Shared directory not found.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
       if (sharedDirectory.sharer != decoded.user.email) {
@@ -115,6 +125,7 @@ function handle_request(req, callback) {
           title: 'Not Authenticated.',
           error: {message: 'Users do not match.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
       sharedDirectory.starred = req.body.starred;
@@ -129,6 +140,7 @@ function handle_request(req, callback) {
         message: 'Shared directory successfully starred.',
         name: sharedDirectory.name,
       };
+      //ConnectionManager.releaseConnection(connection);
       callback(null, res);
     });
   }

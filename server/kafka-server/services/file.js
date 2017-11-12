@@ -8,7 +8,9 @@ let multer = require('multer');
 let File = require('../models/file');
 let SharedFile = require('../models/sharedFile');
 let Activity = require('../models/activity');
-let mongoose = require('mongoose');
+
+/*let ConnectionManager = require('../mongo');
+let connection = ConnectionManager.getConnection();*/
 
 function handle_request(req, callback) {
 
@@ -26,6 +28,7 @@ function handle_request(req, callback) {
           fileName: req.params.fileName,
           buffer: buffer,
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
     });
@@ -40,6 +43,7 @@ function handle_request(req, callback) {
           message: 'Files retrieved successfully.',
           data: files,
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       })
       .catch(() => {
@@ -48,6 +52,7 @@ function handle_request(req, callback) {
           title: 'Cannot retrieve files.',
           error: {message: 'Internal server error.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       });
   }
@@ -61,6 +66,7 @@ function handle_request(req, callback) {
           message: 'Files retrieved successfully.',
           data: files,
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       })
       .catch(() => {
@@ -69,6 +75,7 @@ function handle_request(req, callback) {
           title: 'Cannot retrieve files.',
           error: {message: 'Internal server error.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       });
   }
@@ -83,6 +90,7 @@ function handle_request(req, callback) {
           title: 'Cannot create shareable link.',
           error: {message: 'File not found.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       } else {
         if (file.owner != decoded.user.email) {
@@ -91,6 +99,7 @@ function handle_request(req, callback) {
             title: 'Not Authenticated.',
             error: {message: 'Users do not match.'},
           };
+          //ConnectionManager.releaseConnection(connection);
           callback(null, res);
         }
         file.link = path.join(serverConfig.server + ":" + serverConfig.port, "file", "link", cryptr.encrypt(path.join(file.owner, file.path)), file.name);
@@ -103,6 +112,7 @@ function handle_request(req, callback) {
             message: "File's shareable link successfully created.",
             link: file.link,
           };
+          //ConnectionManager.releaseConnection(connection);
           callback(null, res);
         });
       }
@@ -140,6 +150,7 @@ function handle_request(req, callback) {
           fileName: req.query.name,
           buffer: buffer,
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
     });
@@ -201,6 +212,7 @@ function handle_request(req, callback) {
       message: 'File successfully uploaded.',
       name: req.file.originalname,
     };
+    //ConnectionManager.releaseConnection(connection);
     callback(null, res);
   }
 
@@ -214,6 +226,7 @@ function handle_request(req, callback) {
           title: 'Cannot star file.',
           error: {message: 'File not found.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
       if (file.owner != decoded.user.email) {
@@ -222,6 +235,7 @@ function handle_request(req, callback) {
           title: 'Not Authenticated.',
           error: {message: 'Users do not match.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
       file.starred = req.body.starred;
@@ -252,6 +266,7 @@ function handle_request(req, callback) {
         message: 'File successfully starred.',
         name: file.name,
       };
+      //ConnectionManager.releaseConnection(connection);
       callback(null, res);
     });
   }
@@ -265,6 +280,7 @@ function handle_request(req, callback) {
           title: 'Cannot share file.',
           error: {message: 'File not found.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
       if (file.owner != decoded.user.email) {
@@ -273,6 +289,7 @@ function handle_request(req, callback) {
           title: 'Not Authenticated.',
           error: {message: 'Users do not match.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
       for (let i = 0, len = req.body.sharers.length; i < len; i++) {
@@ -283,9 +300,9 @@ function handle_request(req, callback) {
           owner: req.body.owner,
           sharer: sharer,
         }).then((sharedFile) => {
-          if(sharedFile){
+          if (sharedFile) {
             console.log("Sharer exists!");
-          }else{
+          } else {
             let sharedFile = SharedFile({
               name: req.body.name,
               path: cryptr.encrypt(req.body.path),
@@ -317,6 +334,7 @@ function handle_request(req, callback) {
         message: 'File successfully shared.',
         name: file.name,
       };
+      //ConnectionManager.releaseConnection(connection);
       callback(null, res);
     });
   }
@@ -330,6 +348,7 @@ function handle_request(req, callback) {
           title: 'Cannot rename file.',
           error: {message: 'File not found.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
       if (file.owner != decoded.user.email) {
@@ -338,6 +357,7 @@ function handle_request(req, callback) {
           title: 'Not Authenticated.',
           error: {message: 'Users do not match.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
       fs.pathExists(path.resolve(serverConfig.box.path, file.owner, req.body.path, file.name))
@@ -357,6 +377,7 @@ function handle_request(req, callback) {
                   message: 'File successfully renamed.',
                   name: req.body.name,
                 };
+                //ConnectionManager.releaseConnection(connection);
                 callback(null, res);
               })
               .catch(() => {
@@ -365,6 +386,7 @@ function handle_request(req, callback) {
                   title: 'Cannot rename file.',
                   error: {message: 'Internal server error.'},
                 };
+                //ConnectionManager.releaseConnection(connection);
                 callback(null, res);
               })
 
@@ -374,6 +396,7 @@ function handle_request(req, callback) {
               title: 'Cannot rename file.',
               error: {message: 'File not found.'},
             };
+            //ConnectionManager.releaseConnection(connection);
             callback(null, res);
           }
         })
@@ -383,6 +406,7 @@ function handle_request(req, callback) {
             title: 'Cannot rename file.',
             error: {message: 'Internal server error.'},
           };
+          //ConnectionManager.releaseConnection(connection);
           callback(null, res);
         });
     });
@@ -397,6 +421,7 @@ function handle_request(req, callback) {
           title: 'Cannot delete file.',
           error: {message: 'File not found.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
       if (file.owner != decoded.user.email) {
@@ -405,6 +430,7 @@ function handle_request(req, callback) {
           title: 'Not Authenticated.',
           error: {message: 'Users do not match.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
       console.log(path.resolve(serverConfig.box.path, file.owner, req.body.path, req.body.name));
@@ -440,6 +466,7 @@ function handle_request(req, callback) {
                   message: 'File successfully deleted.',
                   name: req.body.name,
                 };
+                //ConnectionManager.releaseConnection(connection);
                 callback(null, res);
               })
               .catch(() => {
@@ -448,6 +475,7 @@ function handle_request(req, callback) {
                   title: 'Cannot delete file.',
                   error: {message: 'Internal server error.'},
                 };
+                //ConnectionManager.releaseConnection(connection);
                 callback(null, res);
               })
           } else {
@@ -456,6 +484,7 @@ function handle_request(req, callback) {
               title: 'Cannot delete file.',
               error: {message: 'File not found.'},
             };
+            //ConnectionManager.releaseConnection(connection);
             callback(null, res);
           }
         })
@@ -465,6 +494,7 @@ function handle_request(req, callback) {
             title: 'Cannot delete file.',
             error: {message: 'Internal server error.'},
           };
+          //ConnectionManager.releaseConnection(connection);
           callback(null, res);
         });
     });

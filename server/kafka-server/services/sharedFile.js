@@ -6,6 +6,9 @@ let jwt = require('jsonwebtoken');
 let fs = require('fs-extra');
 let SharedFile = require('../models/sharedFile');
 
+/*let ConnectionManager = require('../mongo');
+let connection = ConnectionManager.getConnection();*/
+
 function handle_request(req, callback) {
 
   let res;
@@ -21,6 +24,7 @@ function handle_request(req, callback) {
           message: 'Shared files list retrieved successfully.',
           data: sharedFiles,
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       })
       .catch(() => {
@@ -29,6 +33,7 @@ function handle_request(req, callback) {
           title: 'Cannot retrieve shared files list.',
           error: {message: 'Internal server error.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       });
   }
@@ -43,6 +48,7 @@ function handle_request(req, callback) {
           message: 'Shared files retrieved successfully.',
           data: sharedFiles,
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       })
       .catch(() => {
@@ -51,6 +57,7 @@ function handle_request(req, callback) {
           title: 'Cannot retrieve shared files.',
           error: {message: 'Internal server error.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       });
   }
@@ -69,6 +76,7 @@ function handle_request(req, callback) {
               fileName: req.body.name,
               buffer: buffer,
             };
+            //ConnectionManager.releaseConnection(connection);
             callback(null, res);
           }
         });
@@ -79,6 +87,7 @@ function handle_request(req, callback) {
           title: 'Not Authenticated.',
           error: {message: 'Users do not match.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       });
   }
@@ -92,6 +101,7 @@ function handle_request(req, callback) {
           title: 'Cannot star shared file.',
           error: {message: 'Shared file not found.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
       if (sharedFile.sharer != decoded.user.email) {
@@ -100,6 +110,7 @@ function handle_request(req, callback) {
           title: 'Not Authenticated.',
           error: {message: 'Users do not match.'},
         };
+        //ConnectionManager.releaseConnection(connection);
         callback(null, res);
       }
       sharedFile.starred = req.body.starred;
@@ -114,6 +125,7 @@ function handle_request(req, callback) {
         message: 'Shared file successfully starred.',
         name: sharedFile.name,
       };
+      //ConnectionManager.releaseConnection(connection);
       callback(null, res);
     });
   }
