@@ -8,6 +8,7 @@ let maxPoolSize;
 class ConnectionManager {
 
   constructor(maxPoolSizeValue) {
+    console.error('New Pool.');
     maxPoolSize = maxPoolSizeValue;
     for (let i = 0; i < maxPoolSize; ++i) {
       availableConnections.add(mongoose.connect('mongodb://localhost:27017/dropbox-prototype'));

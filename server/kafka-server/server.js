@@ -18,8 +18,10 @@ let producer = connection.getProducer();
 let ConnectionManager = require('./mongo');
 const mongoDBConnection = new ConnectionManager(250);
 
-/*let mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/dropbox-prototype', {poolSize: 250});*/
+/*
+let mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost:27017/dropbox-prototype', {poolSize: 250});
+*/
 
 console.log('server is running');
 userConsumer.on('message', function (message) {
