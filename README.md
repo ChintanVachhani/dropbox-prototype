@@ -12,7 +12,7 @@ An individual effort to create a simple Dropbox replica. It uses NodeJS, Express
 
 ## Commands
 
-####1. Run the Node Server
+1. Run the Node Server
    ```
    cd server
    cd node-server
@@ -22,7 +22,7 @@ An individual effort to create a simple Dropbox replica. It uses NodeJS, Express
    - **Note :**
       - Server started @ 'localhost:8000'.
       
-####2. Run the Kafka Server
+2. Run the Kafka Server
    ```
    cd server
    cd kafka-server
@@ -30,7 +30,7 @@ An individual effort to create a simple Dropbox replica. It uses NodeJS, Express
    npm run start
    ```
 
-####3. Run the Client
+3. Run the Client
    ```
    cd client
    npm install
